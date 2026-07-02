@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pastor Dashboard - Solution Ground Ministry</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+</head>
+<body>
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2><i class="ti ti-church"></i> SGM <span>CORE</span></h2>
+                <p>Ministry Management System</p>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#" class="active" onclick="showSection('overview')">
+                    <i class="ti ti-layout-dashboard icon"></i><span>Dashboard</span>
+                </a>
+                <a href="#" onclick="showSection('contributions')">
+                    <i class="ti ti-wallet icon"></i><span>Contributions</span>
+                </a>
+                <a href="#" onclick="showSection('tithes')">
+                    <i class="ti ti-clipboard icon"></i><span>Tithes</span>
+                </a>
+                <a href="#" onclick="showSection('offerings')">
+                    <i class="ti ti-gift icon"></i><span>Offerings</span>
+                </a>
+                <a href="#" onclick="showSection('members')">
+                    <i class="ti ti-users icon"></i><span>Members</span>
+                </a>
+                <a href="#" onclick="showSection('transactions')">
+                    <i class="ti ti-credit-card icon"></i><span>Transactions</span>
+                </a>
+            </nav>
+            <div style="padding: 24px; border-top: 1px solid rgba(255,255,255,0.05);">
+                <a href="#" onclick="logout()" style="color: rgba(255,255,255,0.5); text-decoration: none; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 12px;">
+                    <i class="ti ti-logout" style="font-size: 18px;"></i> Sign Out
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-bar">
+                <div>
+                    <h1 id="pageTitle">Ministry Overview</h1>
+                    <p style="color: var(--text-light); font-weight: 500; font-size: 14px; margin-top: 4px;">Welcome back, Pastor. Here's what's happening today.</p>
+                </div>
+                <div class="user-info">
+                    <div class="user-details">
+                        <div class="name" id="userName">Pastor</div>
+                        <div class="role" id="userRole">Senior Administrator</div>
+                    </div>
+                    <div class="user-avatar" id="userAvatar">P</div>
+                </div>
+            </header>
+
+            <!-- Overview Section -->
+            <div id="section-overview" class="section">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="ti ti-users"></i></div>
+                        <div class="stat-value" id="statMembers">0</div>
+                        <div class="stat-label">Total Members</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="ti ti-wallet"></i></div>
+                        <div class="stat-value" id="statTithes">KSh 0</div>
+                        <div class="stat-label">Monthly Tithes</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="ti ti-gift"></i></div>
+                        <div class="stat-value" id="statOfferings">KSh 0</div>
+                        <div class="stat-label">Total Offerings</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="ti ti-chart-bar"></i></div>
+                        <div class="stat-value" id="statContributions">0</div>
+                        <div class="stat-label">Active Drives</div>
+                    </div>
+                </div>
+
+                <div class="grid" style="display: grid; grid-template-columns: 2fr 1fr; gap: 24px; margin-bottom: 24px;">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Giving Trends</h3>
+                            <select style="padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); font-size: 12px; font-weight: 600;">
+                                <option>Last 7 Days</option>
+                                <option>Last 30 Days</option>
+                            </select>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="givingChart" style="height: 300px; width: 100%;"></canvas>
+                        </div>
+                    </div>
+                    <div class="card" style="background: var(--primary); color: white;">
+                        <div class="card-header" style="border-bottom-color: rgba(255,255,255,0.1);">
+                            <h3 style="color: white;">Goal: Building Fund</h3>
+                        </div>
+                        <div class="card-body">
+                            <div style="font-size: 32px; font-weight: 800; margin-bottom: 8px;">KSh 2.5M <span style="font-size: 16px; opacity: 0.5;">/ 5M</span></div>
+                            <div class="progress-bar" style="background: rgba(255,255,255,0.1);">
+                                <div class="progress-fill" style="width: 50%;"></div>
+                            </div>
+                            <p style="font-size: 12px; opacity: 0.5; margin-top: 12px;">50% of target reached. 12 days remaining.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="two-col">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Recent Contributions</h3>
+                        </div>
+                        <div class="card-body" id="recentContributions">
+                            <div class="loading"><div class="spinner"></div>Loading...</div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Recent Tithes & Offerings</h3>
+                        </div>
+                        <div class="card-body" id="recentPayments">
+                            <div class="loading"><div class="spinner"></div>Loading...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contributions Section -->
+            <div id="section-contributions" class="section" style="display:none;">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>All Contributions</h3>
+                        <button class="btn btn-accent btn-sm" onclick="openCreateContribution()">+ New Contribution</button>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Title</th>
+                                        <th>Target</th>
+                                        <th>Raised</th>
+                                        <th>Progress</th>
+                                        <th>Status</th>
+                                        <th>Created</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="contributionsTable"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tithes Section -->
+            <div id="section-tithes" class="section" style="display:none;">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Tithe Records</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Member</th>
+                                        <th>Amount</th>
+                                        <th>Month</th>
+                                        <th>Year</th>
+                                        <th>M-Pesa Code</th>
+                                        <th>Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tithesTable"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Offerings Section -->
+            <div id="section-offerings" class="section" style="display:none;">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Offering Records</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Member</th>
+                                        <th>Amount</th>
+                                        <th>Service Type</th>
+                                        <th>M-Pesa Code</th>
+                                        <th>Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="offeringsTable"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Members Section -->
+            <div id="section-members" class="section" style="display:none;">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Church Members</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Email</th>
+                                        <th>Phone</th>
+                                        <th>Role</th>
+                                        <th>Category</th>
+                                        <th>Joined</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="membersTable"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Transactions Section -->
+            <div id="section-transactions" class="section" style="display:none;">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>M-Pesa Transactions</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Phone</th>
+                                        <th>Amount</th>
+                                        <th>Type</th>
+                                        <th>M-Pesa Code</th>
+                                        <th>Status</th>
+                                        <th>Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="transactionsTable"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Create Contribution Modal -->
+    <div id="createContributionModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Create New Contribution</h3>
+                <button class="close-btn" onclick="closeModal('createContributionModal')">&times;</button>
+            </div>
+            <form id="createContributionForm">
+                <div class="form-group">
+                    <label for="contributionTitle">Title</label>
+                    <input type="text" id="contributionTitle" placeholder="e.g., Youth Conference Fund" required>
+                </div>
+                <div class="form-group">
+                    <label for="contributionDesc">Description</label>
+                    <textarea id="contributionDesc" rows="3" placeholder="Describe the purpose..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="contributionTarget">Target Amount (KSh)</label>
+                    <input type="number" id="contributionTarget" placeholder="100000" min="1" required>
+                </div>
+                <div class="form-group">
+                    <label for="contributionDeadline">Deadline</label>
+                    <input type="date" id="contributionDeadline">
+                </div>
+                <button type="submit" class="btn btn-primary">Create Contribution</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- View Contribution Modal -->
+    <div id="viewContributionModal" class="modal">
+        <div class="modal-content" style="max-width: 700px;">
+            <div class="modal-header">
+                <h3 id="viewContributionTitle">Contribution Details</h3>
+                <button class="close-btn" onclick="closeModal('viewContributionModal')">&times;</button>
+            </div>
+            <div id="contributionDetails"></div>
+        </div>
+    </div>
+
+    <script src="/static/js/api.js"></script>
+    <script>
+        // Check authentication
+        if (!requireAuth()) {
+             // Handle if requireAuth() doesn't redirect
+        } else {
+            const user = getUser();
+            if (user.role !== 'pastor' && user.role !== 'admin') {
+                window.location.href = getDashboardURL(user.role);
+            }
+
+            // Set user info
+            document.getElementById('userName').textContent = user.name;
+            document.getElementById('userRole').textContent = user.role;
+            document.getElementById('userAvatar').textContent = user.name.charAt(0);
+        }
+
+        // Section navigation
+        function showSection(section) {
+            document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
+            document.getElementById(`section-${section}`).style.display = 'block';
+            document.querySelectorAll('.sidebar-nav a').forEach(a => a.classList.remove('active'));
+            
+            // Handle clicking icons/spans
+            const navLink = event ? event.target.closest('a') : document.querySelector(`.sidebar-nav a[onclick*="${section}"]`);
+            if (navLink) navLink.classList.add('active');
+            
+            const title = navLink ? navLink.querySelector('span').textContent : 'Overview';
+            document.getElementById('pageTitle').textContent = title === 'Dashboard' ? 'Ministry Overview' : title;
+            
+            // Load section data
+            switch(section) {
+                case 'overview': loadOverview(); break;
+                case 'contributions': loadContributions(); break;
+                case 'tithes': loadTithes(); break;
+                case 'offerings': loadOfferings(); break;
+                case 'members': loadMembers(); break;
+                case 'transactions': loadTransactions(); break;
+            }
+        }
+
+        // Load overview
+        async function loadOverview() {
+            try {
+                const stats = await getDashboardStats();
+                document.getElementById('statContributions').textContent = stats.total_contributions || 0;
+                document.getElementById('statTithes').textContent = formatCurrency(stats.total_tithes || 0);
+                document.getElementById('statOfferings').textContent = formatCurrency(stats.total_offerings || 0);
+                document.getElementById('statMembers').textContent = stats.total_members || 0;
+
+                // Load recent contributions
+                const contributions = await getContributions();
+                const recentContributions = document.getElementById('recentContributions');
+                if (contributions.length === 0) {
+                    recentContributions.innerHTML = '<div class="empty-state"><div class="icon">💰</div><p>No contributions yet</p></div>';
+                } else {
+                    recentContributions.innerHTML = contributions.slice(0, 5).map(c => `
+                        <div style="padding: 12px 0; border-bottom: 1px solid var(--border);">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                <strong style="font-size: 14px;">${c.title}</strong>
+                                <span style="font-weight: 700; color: var(--primary);">${formatCurrency(c.raised_amount)} / ${formatCurrency(c.target_amount)}</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${getProgressPercent(c.raised_amount, c.target_amount)}%"></div>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; font-size: 12px; color: var(--text-light); margin-top: 4px;">
+                                <span style="font-weight: 600;">${getProgressPercent(c.raised_amount, c.target_amount)}%</span>
+                                <span>${getStatusBadge(c.status)}</span>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+
+                // Load recent payments
+                const tithes = await getTithes();
+                const offerings = await getOfferings();
+                const recentPayments = document.getElementById('recentPayments');
+                const allPayments = [
+                    ...tithes.map(t => ({ ...t, type: 'Tithe' })),
+                    ...offerings.map(o => ({ ...o, type: 'Offering' }))
+                ].sort((a, b) => new Date(b.created_at) - new Date(a.created_at)).slice(0, 5);
+
+                if (allPayments.length === 0) {
+                    recentPayments.innerHTML = '<div class="empty-state"><div class="icon">📋</div><p>No payments yet</p></div>';
+                } else {
+                    recentPayments.innerHTML = allPayments.map(p => `
+                        <div style="padding: 16px 0; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <strong style="font-size: 14px;">${p.user ? p.user.firstname + ' ' + p.user.lastname : 'Unknown'}</strong>
+                                <div style="font-size: 12px; color: var(--text-light); font-weight: 500;">${p.type} ${p.month ? '- ' + p.month : ''}</div>
+                            </div>
+                            <div style="text-align: right;">
+                                <div style="font-weight: 700; color: var(--success);">${formatCurrency(p.amount)}</div>
+                                <div style="font-size: 11px; color: var(--text-light);">${formatDate(p.created_at)}</div>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+
+                initChart();
+                initGSAP();
+            } catch (error) {
+                console.error('Failed to load overview:', error);
+            }
+        }
+
+        function initChart() {
+            const ctx = document.getElementById('givingChart').getContext('2d');
+            
+            // Destroy existing chart if it exists
+            if (window.myChart) {
+                window.myChart.destroy();
+            }
+
+            const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+            gradient.addColorStop(0, 'rgba(1, 31, 91, 0.1)');
+            gradient.addColorStop(1, 'rgba(1, 31, 91, 0)');
+
+            window.myChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    datasets: [{
+                        label: 'Weekly Giving',
+                        data: [65000, 48000, 52000, 78000, 62000, 95000, 150000],
+                        borderColor: '#011F5B',
+                        borderWidth: 3,
+                        backgroundColor: gradient,
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: '#FF9966',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: 4,
+                        pointHoverRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: 'rgba(0,0,0,0.05)', drawBorder: false },
+                            ticks: { color: '#666', font: { size: 11 } }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#666', font: { size: 11 } }
+                        }
+                    }
+                }
+            });
+        }
+
+        function initGSAP() {
+            gsap.from(".stat-card", {
+                opacity: 0,
+                y: 20,
+                duration: 0.5,
+                stagger: 0.1,
+                ease: "power2.out"
+            });
+            gsap.from(".card", {
+                opacity: 0,
+                y: 30,
+                duration: 0.6,
+                stagger: 0.15,
+                ease: "power2.out",
+                delay: 0.3
+            });
+        }
+
+        // Load contributions
+        async function loadContributions() {
+            const tbody = document.getElementById('contributionsTable');
+            tbody.innerHTML = '<tr><td colspan="7" class="loading"><div class="spinner"></div>Loading...</td></tr>';
+            try {
+                const contributions = await getContributions();
+                if (contributions.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state"><div class="icon">💰</div><p>No contributions yet</p></div></td></tr>';
+                    return;
+                }
+                tbody.innerHTML = contributions.map(c => `
+                    <tr>
+                        <td><strong>${c.title}</strong></td>
+                        <td>${formatCurrency(c.target_amount)}</td>
+                        <td>${formatCurrency(c.raised_amount)}</td>
+                        <td style="min-width: 140px;">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${getProgressPercent(c.raised_amount, c.target_amount)}%"></div>
+                            </div>
+                            <small style="font-weight: 700;">${getProgressPercent(c.raised_amount, c.target_amount)}%</small>
+                        </td>
+                        <td>${getStatusBadge(c.status)}</td>
+                        <td>${formatDate(c.created_at)}</td>
+                        <td>
+                            <button class="btn btn-sm btn-accent" onclick="viewContribution(${c.id})">View Details</button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (error) {
+                tbody.innerHTML = `<tr><td colspan="7" style="color: var(--danger);">Error: ${error.message}</td></tr>`;
+            }
+        }
+
+        // Load tithes
+        async function loadTithes() {
+            const tbody = document.getElementById('tithesTable');
+            tbody.innerHTML = '<tr><td colspan="6" class="loading"><div class="spinner"></div>Loading...</td></tr>';
+            try {
+                const tithes = await getTithes();
+                if (tithes.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><div class="icon">📋</div><p>No tithe records</p></div></td></tr>';
+                    return;
+                }
+                tbody.innerHTML = tithes.map(t => `
+                    <tr>
+                        <td><strong>${t.user ? t.user.firstname + ' ' + t.user.lastname : 'Unknown'}</strong></td>
+                        <td><span style="font-weight: 700; color: var(--primary);">${formatCurrency(t.amount)}</span></td>
+                        <td>${t.month || '-'}</td>
+                        <td>${t.year || '-'}</td>
+                        <td><code style="background: #F1F5F9; padding: 2px 6px; border-radius: 4px; font-weight: 600;">${t.mpesa_code || '-'}</code></td>
+                        <td style="color: var(--text-light);">${formatDate(t.created_at)}</td>
+                    </tr>
+                `).join('');
+            } catch (error) {
+                tbody.innerHTML = `<tr><td colspan="6" style="color: var(--danger);">Error: ${error.message}</td></tr>`;
+            }
+        }
+
+        // Load offerings
+        async function loadOfferings() {
+            const tbody = document.getElementById('offeringsTable');
+            tbody.innerHTML = '<tr><td colspan="5" class="loading"><div class="spinner"></div>Loading...</td></tr>';
+            try {
+                const offerings = await getOfferings();
+                if (offerings.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5"><div class="empty-state"><div class="icon">🎁</div><p>No offering records</p></div></td></tr>';
+                    return;
+                }
+                tbody.innerHTML = offerings.map(o => `
+                    <tr>
+                        <td><strong>${o.user ? o.user.firstname + ' ' + o.user.lastname : 'Unknown'}</strong></td>
+                        <td><span style="font-weight: 700; color: var(--primary);">${formatCurrency(o.amount)}</span></td>
+                        <td><span class="badge" style="background: #F1F5F9; color: var(--primary);">${o.service_type || 'General'}</span></td>
+                        <td><code style="background: #F1F5F9; padding: 2px 6px; border-radius: 4px; font-weight: 600;">${o.mpesa_code || '-'}</code></td>
+                        <td style="color: var(--text-light);">${formatDate(o.created_at)}</td>
+                    </tr>
+                `).join('');
+            } catch (error) {
+                tbody.innerHTML = `<tr><td colspan="5" style="color: var(--danger);">Error: ${error.message}</td></tr>`;
+            }
+        }
+
+        // Load members
+        async function loadMembers() {
+            const tbody = document.getElementById('membersTable');
+            tbody.innerHTML = '<tr><td colspan="6" class="loading"><div class="spinner"></div>Loading...</td></tr>';
+            try {
+                const users = await getUsers();
+                if (users.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><div class="icon">👥</div><p>No members</p></div></td></tr>';
+                    return;
+                }
+                tbody.innerHTML = users.map(u => `
+                    <tr>
+                        <td><strong>${u.firstname} ${u.lastname}</strong></td>
+                        <td>${u.email}</td>
+                        <td>${u.phone || '-'}</td>
+                        <td>${getStatusBadge(u.role)}</td>
+                        <td>${u.category || '-'}</td>
+                        <td style="color: var(--text-light);">${formatDate(u.created_at)}</td>
+                    </tr>
+                `).join('');
+            } catch (error) {
+                tbody.innerHTML = `<tr><td colspan="6" style="color: var(--danger);">Error: ${error.message}</td></tr>`;
+            }
+        }
+
+        // Load transactions
+        async function loadTransactions() {
+            const tbody = document.getElementById('transactionsTable');
+            tbody.innerHTML = '<tr><td colspan="6" class="loading"><div class="spinner"></div>Loading...</td></tr>';
+            try {
+                const transactions = await getTransactions();
+                if (transactions.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><div class="icon">💳</div><p>No transactions</p></div></td></tr>';
+                    return;
+                }
+                tbody.innerHTML = transactions.map(t => `
+                    <tr>
+                        <td>${t.phone}</td>
+                        <td><strong>${formatCurrency(t.amount)}</strong></td>
+                        <td><span class="badge" style="background: #F1F5F9; color: var(--primary);">${t.payment_type || 'N/A'}</span></td>
+                        <td><code>${t.mpesa_code || 'Pending'}</code></td>
+                        <td>${getStatusBadge(t.status)}</td>
+                        <td style="color: var(--text-light);">${formatDate(t.created_at)}</td>
+                    </tr>
+                `).join('');
+            } catch (error) {
+                tbody.innerHTML = `<tr><td colspan="6" style="color: var(--danger);">Error: ${error.message}</td></tr>`;
+            }
+        }
+
+        // Create contribution
+        function openCreateContribution() {
+            document.getElementById('createContributionModal').classList.add('active');
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+        }
+
+        document.getElementById('createContributionForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = e.target.querySelector('button');
+            btn.disabled = true;
+            btn.textContent = 'Creating...';
+
+            try {
+                await createContribution({
+                    title: document.getElementById('contributionTitle').value,
+                    description: document.getElementById('contributionDesc').value,
+                    target_amount: parseFloat(document.getElementById('contributionTarget').value),
+                    deadline: document.getElementById('contributionDeadline').value
+                });
+                closeModal('createContributionModal');
+                e.target.reset();
+                loadContributions();
+                loadOverview();
+                alert('Contribution created successfully!');
+            } catch (error) {
+                alert('Error: ' + error.message);
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Create Contribution';
+            }
+        });
+
+        // View contribution details
+        async function viewContribution(id) {
+            try {
+                const contribution = await getContribution(id);
+                const payments = await getContributionPayments(id);
+                
+                document.getElementById('viewContributionTitle').textContent = contribution.title;
+                
+                let html = `
+                    <div style="margin-bottom: 24px;">
+                        <p style="color: var(--text-light); margin-bottom: 16px; line-height: 1.6;">${contribution.description || 'No description'}</p>
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 16px;">
+                            <div class="stat-card" style="padding: 16px;">
+                                <div class="stat-label">Target</div>
+                                <div style="font-size: 18px; font-weight: 800;">${formatCurrency(contribution.target_amount)}</div>
+                            </div>
+                            <div class="stat-card" style="padding: 16px;">
+                                <div class="stat-label">Raised</div>
+                                <div style="font-size: 18px; font-weight: 800; color: var(--success);">${formatCurrency(contribution.raised_amount)}</div>
+                            </div>
+                            <div class="stat-card" style="padding: 16px;">
+                                <div class="stat-label">Status</div>
+                                <div style="margin-top: 4px;">${getStatusBadge(contribution.status)}</div>
+                            </div>
+                        </div>
+                        <div class="progress-bar" style="height: 12px;">
+                            <div class="progress-fill" style="width: ${getProgressPercent(contribution.raised_amount, contribution.target_amount)}%"></div>
+                        </div>
+                        <div style="text-align: right; font-size: 13px; margin-top: 8px; font-weight: 700;">
+                            ${getProgressPercent(contribution.raised_amount, contribution.target_amount)}% Complete
+                        </div>
+                    </div>
+                    <h4 style="margin-bottom: 16px; color: var(--primary);">Contributors (${payments.length})</h4>
+                `;
+
+                if (payments.length === 0) {
+                    html += '<div class="empty-state" style="padding: 30px;"><div class="icon">👤</div><p>No contributions yet</p></div>';
+                } else {
+                    html += `
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Amount</th>
+                                        <th>M-Pesa Code</th>
+                                        <th>Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${payments.map(p => `
+                                        <tr>
+                                            <td><strong>${p.user ? p.user.firstname + ' ' + p.user.lastname : 'Unknown'}</strong></td>
+                                            <td><span style="font-weight: 700; color: var(--primary);">${formatCurrency(p.amount)}</span></td>
+                                            <td><code>${p.mpesa_code || '-'}</code></td>
+                                            <td style="font-size: 12px; color: var(--text-light);">${formatDate(p.created_at)}</td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    `;
+                }
+
+                document.getElementById('contributionDetails').innerHTML = html;
+                document.getElementById('viewContributionModal').classList.add('active');
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+
+        // Close modals on outside click
+        window.onclick = function(event) {
+            document.querySelectorAll('.modal').forEach(m => {
+                if (event.target === m) m.classList.remove('active');
+            });
+        };
+
+        // Load initial data
+        loadOverview();
+    </script>
+</body>
+</html>
