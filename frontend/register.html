@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Solution Ground Ministry</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body class="login-page">
+    <div class="login-container" style="max-width: 500px; padding: 40px;">
+        <div class="logo">
+            <h1><i class="ti ti-church" style="color: var(--accent);"></i> SGM</h1>
+            <p>Join our community today.</p>
+        </div>
+        <div id="alert" class="alert"></div>
+        <form id="registerForm">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                <div class="form-group">
+                    <label for="firstname">First Name</label>
+                    <input type="text" id="firstname" placeholder="John" required>
+                </div>
+                <div class="form-group">
+                    <label for="lastname">Last Name</label>
+                    <input type="text" id="lastname" placeholder="Doe" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" placeholder="name@example.com" required>
+            </div>
+            <div class="form-group">
+                <label for="phone">Phone Number</label>
+                <input type="tel" id="phone" placeholder="0712345678" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" placeholder="••••••••" required>
+            </div>
+            <div class="form-group">
+                <label for="role">Account Type</label>
+                <select id="role">
+                    <option value="member">Member</option>
+                    <option value="youth_leader">Youth Leader</option>
+                    <option value="pastor">Pastor</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Create Account</button>
+        </form>
+        <div class="auth-link">
+            Already have an account? <a href="/static/login.html">Sign in here</a>
+        </div>
+        <div style="margin-top: 24px; text-align: center;">
+            <a href="/static/index.html" style="color: var(--text-light); text-decoration: none; font-size: 13px; font-weight: 600;">← Back to Home</a>
+        </div>
+    </div>
+
+    <script src="/static/js/api.js"></script>
+    <script>
+        // Redirect if already logged in
+        if (getUser()) {
+            window.location.href = getDashboardURL(getUser().role);
+        }
+
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const alert = document.getElementById('alert');
+            const btn = e.target.querySelector('button');
+            
+            alert.className = 'alert';
+            alert.textContent = '';
+            btn.disabled = true;
+            btn.textContent = 'Creating account...';
+
+            try {
+                await register({
+                    firstname: document.getElementById('firstname').value,
+                    lastname: document.getElementById('lastname').value,
+                    email: document.getElementById('email').value,
+                    phone: document.getElementById('phone').value,
+                    password: document.getElementById('password').value,
+                    role: document.getElementById('role').value
+                });
+                // Auto login after registration
+                const response = await login(
+                    document.getElementById('email').value,
+                    document.getElementById('password').value
+                );
+                window.location.href = getDashboardURL(response.user.role);
+            } catch (error) {
+                alert.className = 'alert alert-error';
+                alert.textContent = error.message;
+                btn.disabled = false;
+                btn.textContent = 'Create Account';
+            }
+        });
+    </script>
+</body>
+</html>
