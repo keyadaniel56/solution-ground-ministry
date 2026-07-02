@@ -5,30 +5,653 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Solution Ground Ministry</title>
     <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        :root {
+            --gold: #c9a84c;
+            --gold-light: #e8d5a3;
+            --gold-dark: #a0822a;
+            --deep-blue: #1a1f3c;
+            --navy: #0f1329;
+            --royal-purple: #3d2b5e;
+            --crimson: #8b1e3f;
+            --ivory: #faf8f3;
+            --cream: #f5f0e6;
+            --stained-red: rgba(183, 28, 28, 0.15);
+            --stained-blue: rgba(26, 35, 126, 0.12);
+            --stained-gold: rgba(201, 168, 76, 0.2);
+            --stained-green: rgba(27, 94, 32, 0.1);
+            --text: #2c2416;
+            --text-light: #6b5b4e;
+            --error: #b71c1c;
+            --error-bg: #ffebee;
+            --border: #d4c5a9;
+            --shadow: 0 20px 60px -15px rgba(15, 19, 41, 0.3);
+            --radius: 20px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body.login-page {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            background: var(--navy);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Celestial radial glow behind everything */
+        body.login-page::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 800px;
+            height: 800px;
+            transform: translate(-50%, -50%);
+            background: radial-gradient(circle, rgba(201, 168, 76, 0.15) 0%, transparent 60%);
+            animation: divineGlow 8s ease-in-out infinite;
+            z-index: 0;
+        }
+
+        @keyframes divineGlow {
+            0%, 100% { opacity: 0.6; transform: translate(-50%, -50%) scale(1); }
+            50% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+        }
+
+        /* Stained glass light rays */
+        .light-rays {
+            position: absolute;
+            top: -50%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            height: 150%;
+            z-index: 0;
+            opacity: 0.08;
+            pointer-events: none;
+        }
+
+        .light-rays::before,
+        .light-rays::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            width: 200px;
+            height: 100%;
+            background: linear-gradient(180deg, 
+                rgba(201, 168, 76, 0.8) 0%, 
+                rgba(183, 28, 28, 0.4) 30%, 
+                rgba(26, 35, 126, 0.4) 60%, 
+                transparent 100%);
+            filter: blur(30px);
+        }
+
+        .light-rays::before {
+            left: 20%;
+            transform: rotate(-15deg);
+            animation: rayShift1 12s ease-in-out infinite;
+        }
+
+        .light-rays::after {
+            right: 20%;
+            transform: rotate(15deg);
+            animation: rayShift2 14s ease-in-out infinite;
+        }
+
+        @keyframes rayShift1 {
+            0%, 100% { opacity: 0.6; transform: rotate(-15deg) translateY(0); }
+            50% { opacity: 1; transform: rotate(-12deg) translateY(-20px); }
+        }
+
+        @keyframes rayShift2 {
+            0%, 100% { opacity: 0.6; transform: rotate(15deg) translateY(0); }
+            50% { opacity: 1; transform: rotate(18deg) translateY(-30px); }
+        }
+
+        /* Floating holy orbs / halos */
+        .halo {
+            position: absolute;
+            border-radius: 50%;
+            border: 2px solid rgba(201, 168, 76, 0.15);
+            z-index: 0;
+            animation: haloFloat 20s ease-in-out infinite;
+        }
+
+        .halo-1 {
+            width: 500px;
+            height: 500px;
+            top: -150px;
+            left: -150px;
+            animation-delay: 0s;
+        }
+
+        .halo-2 {
+            width: 400px;
+            height: 400px;
+            bottom: -100px;
+            right: -100px;
+            border-color: rgba(183, 28, 28, 0.1);
+            animation-delay: -7s;
+            animation-duration: 25s;
+        }
+
+        .halo-3 {
+            width: 300px;
+            height: 300px;
+            top: 30%;
+            right: 10%;
+            border-color: rgba(26, 35, 126, 0.12);
+            animation-delay: -14s;
+            animation-duration: 18s;
+        }
+
+        @keyframes haloFloat {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); opacity: 0.3; }
+            25% { transform: translate(20px, -30px) rotate(5deg); opacity: 0.6; }
+            50% { transform: translate(-15px, 15px) rotate(-3deg); opacity: 0.4; }
+            75% { transform: translate(30px, 20px) rotate(4deg); opacity: 0.5; }
+        }
+
+        /* Floating incense / spirit particles */
+        .particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: rgba(201, 168, 76, 0.4);
+            border-radius: 50%;
+            animation: spiritRise 12s linear infinite;
+            box-shadow: 0 0 6px rgba(201, 168, 76, 0.3);
+        }
+
+        .particle:nth-child(1) { left: 15%; animation-duration: 10s; animation-delay: 0s; }
+        .particle:nth-child(2) { left: 25%; animation-duration: 14s; animation-delay: 2s; width: 4px; height: 4px; }
+        .particle:nth-child(3) { left: 40%; animation-duration: 11s; animation-delay: 4s; background: rgba(183, 28, 28, 0.3); }
+        .particle:nth-child(4) { left: 55%; animation-duration: 16s; animation-delay: 1s; width: 2px; height: 2px; }
+        .particle:nth-child(5) { left: 70%; animation-duration: 13s; animation-delay: 3s; background: rgba(26, 35, 126, 0.3); }
+        .particle:nth-child(6) { left: 85%; animation-duration: 15s; animation-delay: 5s; width: 3px; height: 3px; }
+        .particle:nth-child(7) { left: 10%; animation-duration: 18s; animation-delay: 7s; background: rgba(201, 168, 76, 0.3); }
+        .particle:nth-child(8) { left: 45%; animation-duration: 12s; animation-delay: 6s; width: 4px; height: 4px; }
+        .particle:nth-child(9) { left: 60%; animation-duration: 17s; animation-delay: 8s; }
+        .particle:nth-child(10) { left: 80%; animation-duration: 14s; animation-delay: 4s; width: 2px; height: 2px; background: rgba(183, 28, 28, 0.3); }
+
+        @keyframes spiritRise {
+            0% {
+                transform: translateY(100vh) translateX(0) scale(0.5);
+                opacity: 0;
+            }
+            10% { opacity: 0.8; }
+            50% { transform: translateY(50vh) translateX(20px) scale(1); }
+            90% { opacity: 0.6; }
+            100% {
+                transform: translateY(-100px) translateX(-10px) scale(0.3);
+                opacity: 0;
+            }
+        }
+
+        /* Subtle cross pattern overlay */
+        .cross-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            opacity: 0.03;
+            background-image: 
+                linear-gradient(rgba(201, 168, 76, 0.5) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(201, 168, 76, 0.5) 1px, transparent 1px);
+            background-size: 80px 80px;
+            pointer-events: none;
+        }
+
+        /* Main card — like an illuminated manuscript */
+        .login-container {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 440px;
+            background: linear-gradient(145deg, rgba(250, 248, 243, 0.95), rgba(245, 240, 230, 0.95));
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: var(--radius);
+            box-shadow: 
+                var(--shadow),
+                0 0 0 1px rgba(201, 168, 76, 0.2) inset,
+                0 0 60px rgba(201, 168, 76, 0.1) inset;
+            padding: 52px 44px;
+            animation: reveal 0.8s ease-out;
+            border: 1px solid rgba(201, 168, 76, 0.25);
+        }
+
+        /* Ornate top border */
+        .login-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60%;
+            height: 4px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+            border-radius: 0 0 4px 4px;
+        }
+
+        @keyframes reveal {
+            from {
+                opacity: 0;
+                transform: translateY(40px) scale(0.98);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 36px;
+        }
+
+        .logo-icon {
+            width: 72px;
+            height: 72px;
+            background: linear-gradient(135deg, var(--gold-light), var(--gold));
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            color: var(--navy);
+            font-size: 32px;
+            box-shadow: 
+                0 8px 30px rgba(201, 168, 76, 0.4),
+                0 0 0 4px rgba(201, 168, 76, 0.15);
+            animation: holyPulse 4s ease-in-out infinite;
+            position: relative;
+        }
+
+        .logo-icon::after {
+            content: '';
+            position: absolute;
+            inset: -8px;
+            border-radius: 50%;
+            border: 1px solid rgba(201, 168, 76, 0.2);
+            animation: ringExpand 4s ease-in-out infinite;
+        }
+
+        @keyframes holyPulse {
+            0%, 100% { 
+                box-shadow: 0 8px 30px rgba(201, 168, 76, 0.4), 0 0 0 4px rgba(201, 168, 76, 0.15); 
+                transform: scale(1);
+            }
+            50% { 
+                box-shadow: 0 12px 40px rgba(201, 168, 76, 0.6), 0 0 0 8px rgba(201, 168, 76, 0); 
+                transform: scale(1.02);
+            }
+        }
+
+        @keyframes ringExpand {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.15); opacity: 0; }
+        }
+
+        .logo h1 {
+            font-size: 26px;
+            font-weight: 700;
+            color: var(--deep-blue);
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .logo p {
+            color: var(--text-light);
+            font-size: 14px;
+            line-height: 1.6;
+            font-style: italic;
+            font-family: 'Georgia', serif;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 24px 0;
+            color: var(--gold-dark);
+            font-size: 12px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+        }
+
+        .alert {
+            padding: 14px 18px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 20px;
+            display: none;
+            align-items: center;
+            gap: 10px;
+            animation: shake 0.5s ease;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .alert.alert-error {
+            display: flex;
+            background: var(--error-bg);
+            color: var(--error);
+            border: 1px solid rgba(183, 28, 28, 0.2);
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .form-group {
+            margin-bottom: 22px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--deep-blue);
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper input {
+            width: 100%;
+            padding: 15px 18px;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-size: 15px;
+            color: var(--text);
+            background: rgba(255, 255, 255, 0.8);
+            transition: all 0.3s ease;
+            outline: none;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .input-wrapper input::placeholder {
+            color: #a89880;
+        }
+
+        .input-wrapper input:focus {
+            border-color: var(--gold);
+            box-shadow: 0 0 0 4px rgba(201, 168, 76, 0.15);
+            background: rgba(255, 255, 255, 0.95);
+        }
+
+        .input-wrapper input:hover {
+            border-color: #c4b494;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-family: 'Georgia', serif;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            color: var(--navy);
+            box-shadow: 0 6px 20px rgba(201, 168, 76, 0.4);
+            margin-top: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .btn-primary:hover:not(:disabled)::before {
+            left: 100%;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: linear-gradient(135deg, var(--gold-light), var(--gold));
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(201, 168, 76, 0.5);
+        }
+
+        .btn-primary:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .spinner {
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(15, 19, 41, 0.3);
+            border-top-color: var(--navy);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .auth-link {
+            text-align: center;
+            margin-top: 28px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border);
+            color: var(--text-light);
+            font-size: 14px;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .auth-link a {
+            color: var(--gold-dark);
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .auth-link a::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: var(--gold);
+            transition: width 0.3s ease;
+        }
+
+        .auth-link a:hover {
+            color: var(--gold-dark);
+        }
+
+        .auth-link a:hover::after {
+            width: 100%;
+        }
+
+        .back-home {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .back-home a {
+            color: var(--text-light);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .back-home a:hover {
+            color: var(--gold-dark);
+            background: rgba(201, 168, 76, 0.1);
+        }
+
+        /* Scripture verse at bottom */
+        .verse {
+            text-align: center;
+            margin-top: 20px;
+            font-style: italic;
+            color: var(--text-light);
+            font-size: 12px;
+            line-height: 1.6;
+            opacity: 0.7;
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 40px 28px;
+                border-radius: 16px;
+            }
+            
+            .logo h1 {
+                font-size: 22px;
+            }
+
+            .halo-1 { width: 300px; height: 300px; }
+            .halo-2 { width: 250px; height: 250px; }
+            .halo-3 { width: 200px; height: 200px; }
+        }
+    </style>
 </head>
 <body class="login-page">
+    <!-- Holy background elements -->
+    <div class="light-rays"></div>
+    
+    <div class="halo halo-1"></div>
+    <div class="halo halo-2"></div>
+    <div class="halo halo-3"></div>
+    
+    <div class="cross-pattern"></div>
+    
+    <div class="particles">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+    </div>
+
     <div class="login-container">
         <div class="logo">
-            <h1><i class="ti ti-church" style="color: var(--accent);"></i> SGM</h1>
-            <p>Welcome back! Please enter your details.</p>
+            <div class="logo-icon">
+                <i class="ti ti-church"></i>
+            </div>
+            <h1>Solution Ground Ministry</h1>
+            <p>"Enter through the narrow gate. For wide is the gate and broad is the road that leads to destruction."</p>
         </div>
-        <div id="alert" class="alert"></div>
+        
+        <div class="divider">Welcome</div>
+
+        <div id="alert" class="alert">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+            <span></span>
+        </div>
+
         <form id="loginForm">
             <div class="form-group">
                 <label for="email">Email Address</label>
-                <input type="email" id="email" placeholder="name@example.com" required>
+                <div class="input-wrapper">
+                    <input type="email" id="email" placeholder="name@example.com" required autocomplete="email">
+                </div>
             </div>
             <div class="form-group">
                 <label for="password">Password</label>
-                <input type="password" id="password" placeholder="••••••••" required>
+                <div class="input-wrapper">
+                    <input type="password" id="password" placeholder="Enter your password" required autocomplete="current-password">
+                </div>
             </div>
-            <button type="submit" class="btn btn-primary">Sign in</button>
+            <button type="submit" class="btn btn-primary">
+                <span class="btn-text">Sign In</span>
+            </button>
         </form>
+
         <div class="auth-link">
-            Don't have an account? <a href="/static/register.html">Create one for free</a>
+            Don't have an account? <a href="/static/register.html">Join the Flock</a>
         </div>
-        <div style="margin-top: 24px; text-align: center;">
-            <a href="/static/index.html" style="color: var(--text-light); text-decoration: none; font-size: 13px; font-weight: 600;">← Back to Home</a>
+
+        <div class="back-home">
+            <a href="/static/index.html">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                Return to Home
+            </a>
+        </div>
+
+        <div class="verse">
+            "For where two or three gather in my name, there am I with them."<br>— Matthew 18:20
         </div>
     </div>
 
@@ -43,11 +666,13 @@
             e.preventDefault();
             const alert = document.getElementById('alert');
             const btn = e.target.querySelector('button');
+            const btnText = btn.querySelector('.btn-text');
             
             alert.className = 'alert';
-            alert.textContent = '';
+            alert.querySelector('span').textContent = '';
             btn.disabled = true;
-            btn.textContent = 'Signing in...';
+            btnText.textContent = 'Signing in...';
+            btn.insertAdjacentHTML('afterbegin', '<div class="spinner"></div>');
 
             try {
                 const response = await login(
@@ -57,9 +682,11 @@
                 window.location.href = getDashboardURL(response.role);
             } catch (error) {
                 alert.className = 'alert alert-error';
-                alert.textContent = error.message;
+                alert.querySelector('span').textContent = error.message;
                 btn.disabled = false;
-                btn.textContent = 'Sign in';
+                btnText.textContent = 'Sign In';
+                const spinner = btn.querySelector('.spinner');
+                if (spinner) spinner.remove();
             }
         });
     </script>
