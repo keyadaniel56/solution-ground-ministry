@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Member Dashboard - Solution Ground Ministry</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+</head>
+<body>
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2><i class="ti ti-church"></i> SGM <span>CORE</span></h2>
+                <p>Member Portal</p>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#" class="active" onclick="showSection('overview')">
+                    <i class="ti ti-layout-dashboard icon"></i><span>Overview</span>
+                </a>
+                <a href="#" onclick="showSection('contributions')">
+                    <i class="ti ti-wallet icon"></i><span>Contributions</span>
+                </a>
+                <a href="#" onclick="showSection('pay')">
+                    <i class="ti ti-credit-card icon"></i><span>Pay Tithe/Offering</span>
+                </a>
+                <a href="#" onclick="showSection('myhistory')">
+                    <i class="ti ti-clipboard icon"></i><span>My History</span>
+                </a>
+            </nav>
+            <div style="padding: 24px; border-top: 1px solid rgba(255,255,255,0.05);">
+                <a href="#" onclick="logout()" style="color: rgba(255,255,255,0.5); text-decoration: none; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 12px;">
+                    <i class="ti ti-logout" style="font-size: 18px;"></i> Sign Out
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-bar">
+                <div>
+                    <h1 id="pageTitle">Overview</h1>
+                    <p style="color: var(--text-light); font-weight: 500; font-size: 14px; margin-top: 4px;">Welcome back to your spiritual home.</p>
+                </div>
+                <div class="user-info">
+                    <div class="user-details">
+                        <div class="name" id="userName">Member</div>
+                        <div class="role" id="userRole">MEMBER</div>
+                    </div>
+                    <div class="user-avatar" id="userAvatar">M</div>
+                </div>
+            </header>
+
+            <!-- Overview Section -->
+            <div id="section-overview" class="section">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="ti ti-heart"></i></div>
+                        <div class="stat-value" id="statMyContributions">KSh 0</div>
+                        <div class="stat-label">My Total Contributions</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="ti ti-clipboard"></i></div>
+                        <div class="stat-value" id="statMyTithes">KSh 0</div>
+                        <div class="stat-label">My Tithes</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="ti ti-gift"></i></div>
+                        <div class="stat-value" id="statMyOfferings">KSh 0</div>
+                        <div class="stat-label">My Offerings</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Active Contribution Drives</h3>
+                    </div>
+                    <div class="card-body" id="activeDrives">
+                        <div class="loading"><div class="spinner"></div>Loading...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contributions Section -->
+            <div id="section-contributions" class="section" style="display:none;">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>All Active Contributions</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Title</th>
+                                        <th>Description</th>
+                                        <th>Target</th>
+                                        <th>Raised</th>
+                                        <th>Progress</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="contributionsTable"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pay Section -->
+            <div id="section-pay" class="section" style="display:none;">
+                <div class="two-col">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3><i class="ti ti-church" style="color: var(--accent); margin-right: 10px;"></i> Pay Tithe</h3>
+                        </div>
+                        <div class="card-body">
+                            <form id="titheForm">
+                                <div class="form-group">
+                                    <label for="titheAmount">Amount (KSh)</label>
+                                    <input type="number" id="titheAmount" placeholder="e.g., 1000" min="1" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="titheMonth">Month</label>
+                                    <select id="titheMonth">
+                                        <option value="January">January</option>
+                                        <option value="February">February</option>
+                                        <option value="March">March</option>
+                                        <option value="April">April</option>
+                                        <option value="May">May</option>
+                                        <option value="June">June</option>
+                                        <option value="July">July</option>
+                                        <option value="August">August</option>
+                                        <option value="September">September</option>
+                                        <option value="October">October</option>
+                                        <option value="November">November</option>
+                                        <option value="December">December</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="tithePhone">M-Pesa Phone Number</label>
+                                    <input type="tel" id="tithePhone" placeholder="0712345678">
+                                </div>
+                                <div class="form-group">
+                                    <label for="titheCode">M-Pesa Transaction Code (optional)</label>
+                                    <input type="text" id="titheCode" placeholder="e.g., QWE12345R6">
+                                </div>
+                                <button type="submit" class="btn btn-primary">Record Tithe</button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <h3><i class="ti ti-gift" style="color: var(--accent); margin-right: 10px;"></i> Pay Offering</h3>
+                        </div>
+                        <div class="card-body">
+                            <form id="offeringForm">
+                                <div class="form-group">
+                                    <label for="offeringAmount">Amount (KSh)</label>
+                                    <input type="number" id="offeringAmount" placeholder="e.g., 500" min="1" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="offeringService">Service Type</label>
+                                    <select id="offeringService">
+                                        <option value="sunday">Sunday Service</option>
+                                        <option value="wednesday">Wednesday Service</option>
+                                        <option value="special">Special Offering</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="offeringPhone">M-Pesa Phone Number</label>
+                                    <input type="tel" id="offeringPhone" placeholder="0712345678">
+                                </div>
+                                <div class="form-group">
+                                    <label for="offeringCode">M-Pesa Transaction Code (optional)</label>
+                                    <input type="text" id="offeringCode" placeholder="e.g., QWE12345R6">
+                                </div>
+                                <button type="submit" class="btn btn-primary">Record Offering</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- My History Section -->
+            <div id="section-myhistory" class="section" style="display:none;">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>My Tithe History</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Amount</th>
+                                        <th>Month</th>
+                                        <th>Year</th>
+                                        <th>M-Pesa Code</th>
+                                        <th>Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="myTithesTable"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h3>My Offering History</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Amount</th>
+                                        <th>Service Type</th>
+                                        <th>M-Pesa Code</th>
+                                        <th>Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="myOfferingsTable"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Contribute Modal -->
+    <div id="contributeModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="contributeModalTitle">Contribute</h3>
+                <button class="close-btn" onclick="closeModal('contributeModal')">&times;</button>
+            </div>
+            <form id="contributeForm">
+                <div class="form-group">
+                    <label for="contributeAmount">Amount (KSh)</label>
+                    <input type="number" id="contributeAmount" placeholder="Enter amount" min="1" required>
+                </div>
+                <div class="form-group">
+                    <label for="contributePhone">M-Pesa Phone Number</label>
+                    <input type="tel" id="contributePhone" placeholder="0712345678">
+                </div>
+                <div class="form-group">
+                    <label for="contributeCode">M-Pesa Transaction Code (optional)</label>
+                    <input type="text" id="contributeCode" placeholder="e.g., QWE12345R6">
+                </div>
+                <button type="submit" class="btn btn-primary">Contribute Now</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="/static/js/api.js"></script>
+    <script>
+        if (!requireAuth()) {
+        } else {
+            const user = getUser();
+            if (user.role !== 'member') {
+                window.location.href = getDashboardURL(user.role);
+            }
+
+            document.getElementById('userName').textContent = user.name;
+            document.getElementById('userRole').textContent = 'Member';
+            document.getElementById('userAvatar').textContent = user.name.charAt(0);
+        }
+
+        let currentContributionId = null;
+
+        function showSection(section) {
+            document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
+            document.getElementById(`section-${section}`).style.display = 'block';
+            document.querySelectorAll('.sidebar-nav a').forEach(a => a.classList.remove('active'));
+            
+            const navLink = event ? event.target.closest('a') : document.querySelector(`.sidebar-nav a[onclick*="${section}"]`);
+            if (navLink) navLink.classList.add('active');
+            
+            const title = navLink ? navLink.querySelector('span').textContent : 'Overview';
+            document.getElementById('pageTitle').textContent = title;
+            
+            switch(section) {
+                case 'overview': loadOverview(); break;
+                case 'contributions': loadContributions(); break;
+                case 'myhistory': loadMyHistory(); break;
+            }
+        }
+
+        async function loadOverview() {
+            try {
+                const stats = await getDashboardStats();
+                document.getElementById('statMyContributions').textContent = formatCurrency(stats.my_total_contributions || 0);
+                document.getElementById('statMyTithes').textContent = formatCurrency(stats.total_tithes || 0);
+                document.getElementById('statMyOfferings').textContent = formatCurrency(stats.total_offerings || 0);
+
+                const contributions = await getContributions();
+                const container = document.getElementById('activeDrives');
+                const active = contributions.filter(c => c.status === 'active');
+
+                if (active.length === 0) {
+                    container.innerHTML = '<div class="empty-state"><div class="icon">💰</div><p>No active contribution drives at the moment</p></div>';
+                } else {
+                    container.innerHTML = active.map(c => `
+                        <div style="padding: 16px 0; border-bottom: 1px solid var(--border);">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                <div>
+                                    <strong style="font-size: 16px; color: var(--primary);">${c.title}</strong>
+                                    <div style="font-size: 13px; color: var(--text-light);">${c.description || ''}</div>
+                                </div>
+                                <div style="text-align: right;">
+                                    <div style="font-weight: 800; font-size: 18px; color: var(--primary);">${formatCurrency(c.raised_amount)}</div>
+                                    <div style="font-size: 12px; color: var(--text-light); font-weight: 600;">of ${formatCurrency(c.target_amount)}</div>
+                                </div>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${getProgressPercent(c.raised_amount, c.target_amount)}%"></div>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px;">
+                                <span style="font-size: 13px; font-weight: 700;">${getProgressPercent(c.raised_amount, c.target_amount)}% Complete</span>
+                                <button class="btn btn-sm btn-accent" onclick="openContribute(${c.id}, '${c.title}')">Contribute Now</button>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+                
+                initGSAP();
+            } catch (error) {
+                console.error('Failed to load overview:', error);
+            }
+        }
+
+        function initGSAP() {
+            gsap.from(".stat-card", {
+                opacity: 0,
+                y: 20,
+                duration: 0.5,
+                stagger: 0.1,
+                ease: "power2.out"
+            });
+            gsap.from(".card", {
+                opacity: 0,
+                y: 30,
+                duration: 0.6,
+                ease: "power2.out",
+                delay: 0.3
+            });
+        }
+
+        async function loadContributions() {
+            const tbody = document.getElementById('contributionsTable');
+            tbody.innerHTML = '<tr><td colspan="6" class="loading"><div class="spinner"></div>Loading...</td></tr>';
+            try {
+                const contributions = await getContributions();
+                const active = contributions.filter(c => c.status === 'active');
+                
+                if (active.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><div class="icon">💰</div><p>No active contributions</p></div></td></tr>';
+                    return;
+                }
+                tbody.innerHTML = active.map(c => `
+                    <tr>
+                        <td><strong>${c.title}</strong></td>
+                        <td style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; color: var(--text-light);">${c.description || '-'}</td>
+                        <td style="font-weight: 600;">${formatCurrency(c.target_amount)}</td>
+                        <td style="font-weight: 600;">${formatCurrency(c.raised_amount)}</td>
+                        <td style="min-width: 140px;">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${getProgressPercent(c.raised_amount, c.target_amount)}%"></div>
+                            </div>
+                            <small style="font-weight: 700;">${getProgressPercent(c.raised_amount, c.target_amount)}%</small>
+                        </td>
+                        <td>
+                            <button class="btn btn-sm btn-accent" onclick="openContribute(${c.id}, '${c.title}')">Contribute</button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (error) {
+                tbody.innerHTML = `<tr><td colspan="6" style="color: var(--danger);">Error: ${error.message}</td></tr>`;
+            }
+        }
+
+        async function loadMyHistory() {
+            const tithesTbody = document.getElementById('myTithesTable');
+            tithesTbody.innerHTML = '<tr><td colspan="5" class="loading"><div class="spinner"></div>Loading...</td></tr>';
+            try {
+                const tithes = await getTithes();
+                if (tithes.length === 0) {
+                    tithesTbody.innerHTML = '<tr><td colspan="5"><div class="empty-state"><div class="icon">📋</div><p>No tithe records</p></div></td></tr>';
+                } else {
+                    tithesTbody.innerHTML = tithes.map(t => `
+                        <tr>
+                            <td><strong style="color: var(--primary);">${formatCurrency(t.amount)}</strong></td>
+                            <td>${t.month || '-'}</td>
+                            <td>${t.year || '-'}</td>
+                            <td><code>${t.mpesa_code || '-'}</code></td>
+                            <td style="color: var(--text-light);">${formatDate(t.created_at)}</td>
+                        </tr>
+                    `).join('');
+                }
+            } catch (error) {
+                tithesTbody.innerHTML = `<tr><td colspan="5" style="color: var(--danger);">Error: ${error.message}</td></tr>`;
+            }
+
+            const offeringsTbody = document.getElementById('myOfferingsTable');
+            offeringsTbody.innerHTML = '<tr><td colspan="4" class="loading"><div class="spinner"></div>Loading...</td></tr>';
+            try {
+                const offerings = await getOfferings();
+                if (offerings.length === 0) {
+                    offeringsTbody.innerHTML = '<tr><td colspan="4"><div class="empty-state"><div class="icon">🎁</div><p>No offering records</p></div></td></tr>';
+                } else {
+                    offeringsTbody.innerHTML = offerings.map(o => `
+                        <tr>
+                            <td><strong style="color: var(--primary);">${formatCurrency(o.amount)}</strong></td>
+                            <td><span class="badge" style="background: #F1F5F9; color: var(--primary);">${o.service_type || 'General'}</span></td>
+                            <td><code>${o.mpesa_code || '-'}</code></td>
+                            <td style="color: var(--text-light);">${formatDate(o.created_at)}</td>
+                        </tr>
+                    `).join('');
+                }
+            } catch (error) {
+                offeringsTbody.innerHTML = `<tr><td colspan="4" style="color: var(--danger);">Error: ${error.message}</td></tr>`;
+            }
+        }
+
+        function openContribute(id, title) {
+            currentContributionId = id;
+            document.getElementById('contributeModalTitle').textContent = `Contribute to: ${title}`;
+            document.getElementById('contributeModal').classList.add('active');
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+        }
+
+        document.getElementById('contributeForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = e.target.querySelector('button');
+            btn.disabled = true;
+            btn.textContent = 'Processing...';
+
+            try {
+                await contributeToFund(currentContributionId, {
+                    amount: parseFloat(document.getElementById('contributeAmount').value),
+                    phone: document.getElementById('contributePhone').value,
+                    mpesa_code: document.getElementById('contributeCode').value
+                });
+                closeModal('contributeModal');
+                e.target.reset();
+                loadOverview();
+                loadContributions();
+                alert('Contribution successful! Thank you for your generosity.');
+            } catch (error) {
+                alert('Error: ' + error.message);
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Contribute Now';
+            }
+        });
+
+        document.getElementById('titheForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = e.target.querySelector('button');
+            btn.disabled = true;
+            btn.textContent = 'Recording...';
+
+            try {
+                await payTithe({
+                    amount: parseFloat(document.getElementById('titheAmount').value),
+                    month: document.getElementById('titheMonth').value,
+                    phone: document.getElementById('tithePhone').value,
+                    mpesa_code: document.getElementById('titheCode').value
+                });
+                e.target.reset();
+                alert('Tithe recorded successfully! God bless you.');
+            } catch (error) {
+                alert('Error: ' + error.message);
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Record Tithe';
+            }
+        });
+
+        document.getElementById('offeringForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = e.target.querySelector('button');
+            btn.disabled = true;
+            btn.textContent = 'Recording...';
+
+            try {
+                await payOffering({
+                    amount: parseFloat(document.getElementById('offeringAmount').value),
+                    service_type: document.getElementById('offeringService').value,
+                    phone: document.getElementById('offeringPhone').value,
+                    mpesa_code: document.getElementById('offeringCode').value
+                });
+                e.target.reset();
+                alert('Offering recorded successfully! God bless you.');
+            } catch (error) {
+                alert('Error: ' + error.message);
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Record Offering';
+            }
+        });
+
+        window.onclick = function(event) {
+            document.querySelectorAll('.modal').forEach(m => {
+                if (event.target === m) m.classList.remove('active');
+            });
+        };
+
+        loadOverview();
+    </script>
+</body>
+</html>
