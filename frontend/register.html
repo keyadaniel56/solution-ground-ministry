@@ -85,7 +85,7 @@
                     document.getElementById('email').value,
                     document.getElementById('password').value
                 );
-                window.location.href = getDashboardURL(response.user.role);
+                window.location.href = getDashboardURL(response.role);
             } catch (error) {
                 alert.className = 'alert alert-error';
                 alert.textContent = error.message;
