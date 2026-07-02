@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Youth Leader Dashboard - Solution Ground Ministry</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+</head>
+<body>
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2><i class="ti ti-church"></i> SGM <span>CORE</span></h2>
+                <p>Youth Ministry Hub</p>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#" class="active" onclick="showSection('overview')">
+                    <i class="ti ti-layout-dashboard icon"></i><span>Overview</span>
+                </a>
+                <a href="#" onclick="showSection('contributions')">
+                    <i class="ti ti-wallet icon"></i><span>Contributions</span>
+                </a>
+                <a href="#" onclick="showSection('payments')">
+                    <i class="ti ti-credit-card icon"></i><span>Payments</span>
+                </a>
+            </nav>
+            <div style="padding: 24px; border-top: 1px solid rgba(255,255,255,0.05);">
+                <a href="#" onclick="logout()" style="color: rgba(255,255,255,0.5); text-decoration: none; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 12px;">
+                    <i class="ti ti-logout" style="font-size: 18px;"></i> Sign Out
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-bar">
+                <div>
+                    <h1 id="pageTitle">Overview</h1>
+                    <p style="color: var(--text-light); font-weight: 500; font-size: 14px; margin-top: 4px;">Empowering the next generation.</p>
+                </div>
+                <div class="user-info">
+                    <div class="user-details">
+                        <div class="name" id="userName">Youth Leader</div>
+                        <div class="role" id="userRole">YOUTH LEADER</div>
+                    </div>
+                    <div class="user-avatar" id="userAvatar">Y</div>
+                </div>
+            </header>
+
+            <!-- Overview Section -->
+            <div id="section-overview" class="section">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="ti ti-wallet"></i></div>
+                        <div class="stat-value" id="statContributions">0</div>
+                        <div class="stat-label">Total Drive</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="ti ti-circle-check"></i></div>
+                        <div class="stat-value" id="statActive">0</div>
+                        <div class="stat-label">Active Drives</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="ti ti-users"></i></div>
+                        <div class="stat-value" id="statMembers">0</div>
+                        <div class="stat-label">Total Members</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3>My Contribution Drives</h3>
+                        <button class="btn btn-accent btn-sm" onclick="openCreateContribution()">+ New Drive</button>
+                    </div>
+                    <div class="card-body" id="myContributions">
+                        <div class="loading"><div class="spinner"></div>Loading...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contributions Section -->
+            <div id="section-contributions" class="section" style="display:none;">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Manage Contributions</h3>
+                        <button class="btn btn-accent btn-sm" onclick="openCreateContribution()">+ New Drive</button>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Title</th>
+                                        <th>Target</th>
+                                        <th>Raised</th>
+                                        <th>Progress</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="contributionsTable"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payments Section -->
+            <div id="section-payments" class="section" style="display:none;">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Payment Records</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Drive</th>
+                                        <th>Contributor</th>
+                                        <th>Amount</th>
+                                        <th>M-Pesa Code</th>
+                                        <th>Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="paymentsTable"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Create Contribution Modal -->
+    <div id="createContributionModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Create Youth Contribution Drive</h3>
+                <button class="close-btn" onclick="closeModal('createContributionModal')">&times;</button>
+            </div>
+            <form id="createContributionForm">
+                <div class="form-group">
+                    <label for="contributionTitle">Title</label>
+                    <input type="text" id="contributionTitle" placeholder="e.g., Youth Camp Fund" required>
+                </div>
+                <div class="form-group">
+                    <label for="contributionDesc">Description</label>
+                    <textarea id="contributionDesc" rows="3" placeholder="Describe the purpose..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="contributionTarget">Target Amount (KSh)</label>
+                    <input type="number" id="contributionTarget" placeholder="50000" min="1" required>
+                </div>
+                <div class="form-group">
+                    <label for="contributionDeadline">Deadline</label>
+                    <input type="date" id="contributionDeadline">
+                </div>
+                <button type="submit" class="btn btn-primary">Create Drive</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- View Contributors Modal -->
+    <div id="viewContributorsModal" class="modal">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h3 id="viewContributorsTitle">Contributors</h3>
+                <button class="close-btn" onclick="closeModal('viewContributorsModal')">&times;</button>
+            </div>
+            <div id="contributorsList"></div>
+        </div>
+    </div>
+
+    <script src="/static/js/api.js"></script>
+    <script>
+        if (!requireAuth()) {
+        } else {
+            const user = getUser();
+            if (user.role !== 'youth_leader') {
+                window.location.href = getDashboardURL(user.role);
+            }
+
+            document.getElementById('userName').textContent = user.name;
+            document.getElementById('userRole').textContent = 'Youth Leader';
+            document.getElementById('userAvatar').textContent = user.name.charAt(0);
+        }
+
+        function showSection(section) {
+            document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
+            document.getElementById(`section-${section}`).style.display = 'block';
+            document.querySelectorAll('.sidebar-nav a').forEach(a => a.classList.remove('active'));
+            
+            const navLink = event ? event.target.closest('a') : document.querySelector(`.sidebar-nav a[onclick*="${section}"]`);
+            if (navLink) navLink.classList.add('active');
+            
+            const title = navLink ? navLink.querySelector('span').textContent : 'Overview';
+            document.getElementById('pageTitle').textContent = title;
+            
+            switch(section) {
+                case 'overview': loadOverview(); break;
+                case 'contributions': loadContributions(); break;
+                case 'payments': loadAllPayments(); break;
+            }
+        }
+
+        async function loadOverview() {
+            try {
+                const stats = await getDashboardStats();
+                const contributions = await getContributions();
+                
+                document.getElementById('statContributions').textContent = contributions.length;
+                document.getElementById('statActive').textContent = contributions.filter(c => c.status === 'active').length;
+                document.getElementById('statMembers').textContent = stats.total_members || 0;
+
+                const container = document.getElementById('myContributions');
+                if (contributions.length === 0) {
+                    container.innerHTML = '<div class="empty-state"><div class="icon">💰</div><p>No contribution drives yet. Create your first one!</p></div>';
+                } else {
+                    container.innerHTML = contributions.map(c => `
+                        <div style="padding: 16px 0; border-bottom: 1px solid var(--border);">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                <div>
+                                    <strong style="font-size: 16px; color: var(--primary);">${c.title}</strong>
+                                    <div style="font-size: 13px; color: var(--text-light);">${c.description || ''}</div>
+                                </div>
+                                <div style="text-align: right;">
+                                    <div style="font-weight: 800; font-size: 18px; color: var(--primary);">${formatCurrency(c.raised_amount)}</div>
+                                    <div style="font-size: 12px; color: var(--text-light); font-weight: 600;">of ${formatCurrency(c.target_amount)}</div>
+                                </div>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${getProgressPercent(c.raised_amount, c.target_amount)}%"></div>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-top: 4px;">
+                                <span style="font-size: 13px; font-weight: 700;">${getProgressPercent(c.raised_amount, c.target_amount)}% Complete</span>
+                                <span>${getStatusBadge(c.status)}</span>
+                            </div>
+                            <div style="margin-top: 12px;">
+                                <button class="btn btn-sm btn-accent" onclick="viewContributors(${c.id}, '${c.title}')">View Contributors</button>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+                
+                initGSAP();
+            } catch (error) {
+                console.error('Failed to load overview:', error);
+            }
+        }
+
+        function initGSAP() {
+            gsap.from(".stat-card", {
+                opacity: 0,
+                y: 20,
+                duration: 0.5,
+                stagger: 0.1,
+                ease: "power2.out"
+            });
+            gsap.from(".card", {
+                opacity: 0,
+                y: 30,
+                duration: 0.6,
+                ease: "power2.out",
+                delay: 0.3
+            });
+        }
+
+        async function loadContributions() {
+            const tbody = document.getElementById('contributionsTable');
+            tbody.innerHTML = '<tr><td colspan="6" class="loading"><div class="spinner"></div>Loading...</td></tr>';
+            try {
+                const contributions = await getContributions();
+                if (contributions.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><div class="icon">💰</div><p>No contribution drives</p></div></td></tr>';
+                    return;
+                }
+                tbody.innerHTML = contributions.map(c => `
+                    <tr>
+                        <td><strong>${c.title}</strong></td>
+                        <td style="font-weight: 600;">${formatCurrency(c.target_amount)}</td>
+                        <td style="font-weight: 600;">${formatCurrency(c.raised_amount)}</td>
+                        <td style="min-width: 140px;">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${getProgressPercent(c.raised_amount, c.target_amount)}%"></div>
+                            </div>
+                            <small style="font-weight: 700;">${getProgressPercent(c.raised_amount, c.target_amount)}%</small>
+                        </td>
+                        <td>${getStatusBadge(c.status)}</td>
+                        <td>
+                            <button class="btn btn-sm btn-accent" onclick="viewContributors(${c.id}, '${c.title}')">Contributors</button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (error) {
+                tbody.innerHTML = `<tr><td colspan="6" style="color: var(--danger);">Error: ${error.message}</td></tr>`;
+            }
+        }
+
+        async function loadAllPayments() {
+            const tbody = document.getElementById('paymentsTable');
+            tbody.innerHTML = '<tr><td colspan="5" class="loading"><div class="spinner"></div>Loading...</td></tr>';
+            try {
+                const contributions = await getContributions();
+                let allPayments = [];
+                
+                for (const c of contributions) {
+                    try {
+                        const payments = await getContributionPayments(c.id);
+                        allPayments = allPayments.concat(payments.map(p => ({ ...p, drive: c.title })));
+                    } catch (e) {}
+                }
+
+                allPayments.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+                if (allPayments.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5"><div class="empty-state"><div class="icon">💳</div><p>No payments yet</p></div></td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = allPayments.map(p => `
+                    <tr>
+                        <td><strong>${p.drive}</strong></td>
+                        <td><strong>${p.user ? p.user.firstname + ' ' + p.user.lastname : 'Unknown'}</strong></td>
+                        <td><span style="font-weight: 700; color: var(--primary);">${formatCurrency(p.amount)}</span></td>
+                        <td><code>${p.mpesa_code || '-'}</code></td>
+                        <td style="color: var(--text-light); font-size: 13px;">${formatDate(p.created_at)}</td>
+                    </tr>
+                `).join('');
+            } catch (error) {
+                tbody.innerHTML = `<tr><td colspan="5" style="color: var(--danger);">Error: ${error.message}</td></tr>`;
+            }
+        }
+
+        function openCreateContribution() {
+            document.getElementById('createContributionModal').classList.add('active');
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+        }
+
+        document.getElementById('createContributionForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = e.target.querySelector('button');
+            btn.disabled = true;
+            btn.textContent = 'Creating...';
+
+            try {
+                await createContribution({
+                    title: document.getElementById('contributionTitle').value,
+                    description: document.getElementById('contributionDesc').value,
+                    target_amount: parseFloat(document.getElementById('contributionTarget').value),
+                    deadline: document.getElementById('contributionDeadline').value
+                });
+                closeModal('createContributionModal');
+                e.target.reset();
+                loadContributions();
+                loadOverview();
+                alert('Contribution drive created!');
+            } catch (error) {
+                alert('Error: ' + error.message);
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Create Drive';
+            }
+        });
+
+        async function viewContributors(id, title) {
+            document.getElementById('viewContributorsTitle').textContent = `Contributors - ${title}`;
+            document.getElementById('contributorsList').innerHTML = '<div class="loading"><div class="spinner"></div>Loading...</div>';
+            document.getElementById('viewContributorsModal').classList.add('active');
+
+            try {
+                const payments = await getContributionPayments(id);
+                if (payments.length === 0) {
+                    document.getElementById('contributorsList').innerHTML = '<div class="empty-state"><div class="icon">👤</div><p>No one has contributed yet</p></div>';
+                } else {
+                    document.getElementById('contributorsList').innerHTML = `
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Amount</th>
+                                        <th>M-Pesa</th>
+                                        <th>Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${payments.map(p => `
+                                        <tr>
+                                            <td><strong>${p.user ? p.user.firstname + ' ' + p.user.lastname : 'Unknown'}</strong></td>
+                                            <td><span style="font-weight: 700; color: var(--primary);">${formatCurrency(p.amount)}</span></td>
+                                            <td><code>${p.mpesa_code || '-'}</code></td>
+                                            <td style="font-size: 12px; color: var(--text-light);">${formatDate(p.created_at)}</td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div style="margin-top: 20px; font-weight: 800; font-size: 16px; text-align: right; color: var(--primary);">
+                            Total Raised: ${formatCurrency(payments.reduce((sum, p) => sum + p.amount, 0))}
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                document.getElementById('contributorsList').innerHTML = `<p style="color: var(--danger);">Error: ${error.message}</p>`;
+            }
+        }
+
+        window.onclick = function(event) {
+            document.querySelectorAll('.modal').forEach(m => {
+                if (event.target === m) m.classList.remove('active');
+            });
+        };
+
+        loadOverview();
+    </script>
+</body>
+</html>
