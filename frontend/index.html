@@ -4,30 +4,883 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Solution Ground Ministry - Empowering Your Ministry</title>
-    <link rel="stylesheet" href="/static/css/style.css">
-    <link rel="stylesheet" href="/static/css/landing.css">
-    <link rel="stylesheet" href="https://unpkg.com/lenis@1.1.18/dist/lenis.css">
+    <style>
+        :root {
+            --gold: #c9a84c;
+            --gold-light: #e8d5a3;
+            --gold-dark: #a0822a;
+            --deep-blue: #1a1f3c;
+            --navy: #0f1329;
+            --crimson: #8b1e3f;
+            --ivory: #faf8f3;
+            --cream: #f5f0e6;
+            --text: #2c2416;
+            --text-light: #6b5b4e;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            background: var(--navy);
+            color: var(--ivory);
+            overflow-x: hidden;
+        }
+
+        /* ========== SACRED BACKGROUND ========== */
+        .sacred-bg {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .divine-glow {
+            position: absolute;
+            top: 50%; left: 50%;
+            width: 1000px; height: 1000px;
+            transform: translate(-50%, -50%);
+            background: radial-gradient(circle, rgba(201, 168, 76, 0.08) 0%, transparent 60%);
+            animation: divinePulse 10s ease-in-out infinite;
+        }
+
+        @keyframes divinePulse {
+            0%, 100% { opacity: 0.5; transform: translate(-50%, -50%) scale(1); }
+            50% { opacity: 1; transform: translate(-50%, -50%) scale(1.15); }
+        }
+
+        .halo {
+            position: absolute;
+            border-radius: 50%;
+            border: 1px solid rgba(201, 168, 76, 0.1);
+            animation: haloDrift 25s ease-in-out infinite;
+        }
+
+        .halo-1 { width: 600px; height: 600px; top: -200px; left: -200px; }
+        .halo-2 { width: 500px; height: 500px; bottom: -150px; right: -150px; border-color: rgba(183, 28, 28, 0.08); animation-delay: -8s; animation-duration: 30s; }
+        .halo-3 { width: 400px; height: 400px; top: 40%; right: 5%; border-color: rgba(26, 35, 126, 0.1); animation-delay: -16s; animation-duration: 22s; }
+
+        @keyframes haloDrift {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); opacity: 0.3; }
+            25% { transform: translate(30px, -40px) rotate(5deg); opacity: 0.6; }
+            50% { transform: translate(-20px, 20px) rotate(-3deg); opacity: 0.4; }
+            75% { transform: translate(40px, 30px) rotate(4deg); opacity: 0.5; }
+        }
+
+        .cross-pattern {
+            position: absolute;
+            inset: 0;
+            opacity: 0.02;
+            background-image: 
+                linear-gradient(rgba(201, 168, 76, 0.8) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(201, 168, 76, 0.8) 1px, transparent 1px);
+            background-size: 100px 100px;
+        }
+
+        .spirit-particles {
+            position: absolute;
+            width: 100%; height: 100%;
+        }
+
+        .particle {
+            position: absolute;
+            width: 3px; height: 3px;
+            background: rgba(201, 168, 76, 0.3);
+            border-radius: 50%;
+            animation: spiritRise 15s linear infinite;
+            box-shadow: 0 0 8px rgba(201, 168, 76, 0.2);
+        }
+
+        .particle:nth-child(1) { left: 10%; animation-duration: 12s; }
+        .particle:nth-child(2) { left: 25%; animation-duration: 18s; animation-delay: 3s; width: 4px; height: 4px; }
+        .particle:nth-child(3) { left: 40%; animation-duration: 14s; animation-delay: 6s; background: rgba(183, 28, 28, 0.25); }
+        .particle:nth-child(4) { left: 55%; animation-duration: 20s; animation-delay: 2s; width: 2px; height: 2px; }
+        .particle:nth-child(5) { left: 70%; animation-duration: 16s; animation-delay: 5s; background: rgba(26, 35, 126, 0.25); }
+        .particle:nth-child(6) { left: 85%; animation-duration: 13s; animation-delay: 8s; width: 3px; height: 3px; }
+        .particle:nth-child(7) { left: 15%; animation-duration: 19s; animation-delay: 1s; }
+        .particle:nth-child(8) { left: 50%; animation-duration: 17s; animation-delay: 9s; width: 4px; height: 4px; }
+        .particle:nth-child(9) { left: 75%; animation-duration: 15s; animation-delay: 4s; }
+        .particle:nth-child(10) { left: 90%; animation-duration: 11s; animation-delay: 7s; width: 2px; height: 2px; }
+
+        @keyframes spiritRise {
+            0% { transform: translateY(100vh) translateX(0) scale(0.5); opacity: 0; }
+            10% { opacity: 0.8; }
+            50% { transform: translateY(50vh) translateX(20px) scale(1); }
+            90% { opacity: 0.5; }
+            100% { transform: translateY(-100px) translateX(-10px) scale(0.3); opacity: 0; }
+        }
+
+        /* ========== NAV ========== */
+        .landing-nav {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 48px;
+            transition: all 0.4s ease;
+            background: transparent;
+        }
+
+        .landing-nav.scrolled {
+            background: rgba(15, 19, 41, 0.95);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+            padding: 14px 48px;
+            border-bottom: 1px solid rgba(201, 168, 76, 0.15);
+        }
+
+        .landing-nav .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--gold-light);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .landing-nav .logo i {
+            font-size: 28px;
+            color: var(--gold);
+            animation: holyPulse 4s ease-in-out infinite;
+        }
+
+        @keyframes holyPulse {
+            0%, 100% { filter: drop-shadow(0 0 5px rgba(201, 168, 76, 0.4)); }
+            50% { filter: drop-shadow(0 0 15px rgba(201, 168, 76, 0.7)); }
+        }
+
+        .nav-links { display: flex; gap: 16px; align-items: center; }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+            font-family: 'Georgia', serif;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-sm { padding: 10px 20px; font-size: 13px; }
+
+        .btn-nav-login {
+            color: var(--gold-light);
+            background: transparent;
+            border: 1px solid rgba(201, 168, 76, 0.3);
+        }
+
+        .btn-nav-login:hover {
+            background: rgba(201, 168, 76, 0.1);
+            border-color: var(--gold);
+            color: var(--gold);
+        }
+
+        .btn-accent {
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            color: var(--navy);
+            box-shadow: 0 4px 15px rgba(201, 168, 76, 0.3);
+        }
+
+        .btn-accent:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(201, 168, 76, 0.5);
+        }
+
+        /* ========== HERO ========== */
+        .hero {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 120px 48px 80px;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0; right: 0;
+            width: 55%; height: 100%;
+            background: linear-gradient(135deg, rgba(201, 168, 76, 0.05), transparent);
+            clip-path: polygon(20% 0, 100% 0, 100% 100%, 0% 100%);
+            z-index: 1;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 600px;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 18px;
+            background: rgba(201, 168, 76, 0.1);
+            border: 1px solid rgba(201, 168, 76, 0.2);
+            border-radius: 50px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--gold);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 24px;
+        }
+
+        .hero-badge::before {
+            content: '✦';
+            color: var(--gold);
+            font-size: 10px;
+        }
+
+        .hero h1 {
+            font-size: 56px;
+            font-weight: 700;
+            line-height: 1.15;
+            margin-bottom: 24px;
+            color: var(--ivory);
+            letter-spacing: -0.5px;
+        }
+
+        .hero h1 span {
+            background: linear-gradient(135deg, var(--gold-light), var(--gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 18px;
+            line-height: 1.7;
+            color: rgba(250, 248, 243, 0.7);
+            margin-bottom: 36px;
+            max-width: 480px;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .hero-btns {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            color: var(--navy);
+            padding: 16px 36px;
+            font-size: 15px;
+            font-weight: 600;
+            box-shadow: 0 6px 25px rgba(201, 168, 76, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .btn-primary:hover::before { left: 100%; }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(201, 168, 76, 0.5);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid rgba(201, 168, 76, 0.4);
+            color: var(--gold-light);
+            padding: 16px 36px;
+            font-size: 15px;
+        }
+
+        .btn-outline:hover {
+            background: rgba(201, 168, 76, 0.1);
+            border-color: var(--gold);
+            color: var(--gold);
+        }
+
+        .diagonal-split {
+            position: absolute;
+            top: 0; right: 0;
+            width: 50%; height: 100%;
+            clip-path: polygon(25% 0, 100% 0, 100% 100%, 0% 100%);
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .diagonal-split img {
+            width: 100%; height: 100%;
+            object-fit: cover;
+            filter: brightness(0.6) saturate(0.8);
+            animation: slowZoom 20s ease-in-out infinite alternate;
+        }
+
+        @keyframes slowZoom {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.1); }
+        }
+
+        .diagonal-split::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, var(--navy) 0%, transparent 40%, rgba(15, 19, 41, 0.5) 100%);
+        }
+
+        .hero-stats {
+            position: absolute;
+            bottom: 60px; left: 48px;
+            z-index: 2;
+            display: flex;
+            gap: 24px;
+        }
+
+        .glass-stat {
+            background: rgba(250, 248, 243, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(201, 168, 76, 0.15);
+            border-radius: 16px;
+            padding: 20px 28px;
+            text-align: center;
+            min-width: 140px;
+        }
+
+        .glass-stat .value {
+            display: block;
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--gold);
+            line-height: 1;
+            margin-bottom: 6px;
+        }
+
+        .glass-stat .label {
+            font-size: 12px;
+            color: rgba(250, 248, 243, 0.6);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* ========== FEATURES SECTION - CHURCH & EMPOWERMENT FOCUSED ========== */
+        .features-section {
+            position: relative;
+            z-index: 1;
+            padding: 120px 48px;
+            background: linear-gradient(180deg, var(--navy), rgba(26, 31, 60, 0.8), var(--navy));
+        }
+
+        .features-section::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 50%;
+            transform: translateX(-50%);
+            width: 200px; height: 1px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+        }
+
+        .features-header {
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto 80px;
+        }
+
+        .features-header::before {
+            content: '✦';
+            display: block;
+            color: var(--gold);
+            font-size: 20px;
+            margin-bottom: 20px;
+            opacity: 0.6;
+        }
+
+        .features-header h2 {
+            font-size: 44px;
+            font-weight: 700;
+            color: var(--ivory);
+            margin-bottom: 20px;
+            letter-spacing: -0.5px;
+            line-height: 1.2;
+        }
+
+        .features-header h2 em {
+            color: var(--gold);
+            font-style: normal;
+            position: relative;
+        }
+
+        .features-header h2 em::after {
+            content: '';
+            position: absolute;
+            bottom: -4px; left: 0;
+            width: 100%; height: 2px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+        }
+
+        .features-header p {
+            font-size: 18px;
+            color: rgba(250, 248, 243, 0.55);
+            line-height: 1.7;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        /* Church-centered feature cards */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 32px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .feature-card {
+            position: relative;
+            background: linear-gradient(145deg, rgba(250, 248, 243, 0.04), rgba(245, 240, 230, 0.01));
+            border: 1px solid rgba(201, 168, 76, 0.1);
+            border-radius: 24px;
+            padding: 48px;
+            transition: all 0.5s ease;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .feature-card::after {
+            content: '';
+            position: absolute;
+            top: -50%; right: -50%;
+            width: 300px; height: 300px;
+            background: radial-gradient(circle, rgba(201, 168, 76, 0.08), transparent 70%);
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            pointer-events: none;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(201, 168, 76, 0.25);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.35), 0 0 80px rgba(201, 168, 76, 0.04);
+        }
+
+        .feature-card:hover::before,
+        .feature-card:hover::after {
+            opacity: 1;
+        }
+
+        .feature-icon {
+            width: 64px; height: 64px;
+            background: linear-gradient(135deg, rgba(201, 168, 76, 0.15), rgba(201, 168, 76, 0.05));
+            border: 1px solid rgba(201, 168, 76, 0.2);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: var(--gold);
+            margin-bottom: 28px;
+            position: relative;
+            z-index: 1;
+            transition: all 0.4s ease;
+        }
+
+        .feature-card:hover .feature-icon {
+            transform: scale(1.1) rotate(-5deg);
+            box-shadow: 0 0 30px rgba(201, 168, 76, 0.2);
+        }
+
+        .feature-card h3 {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--ivory);
+            margin-bottom: 14px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .feature-card p {
+            font-size: 15px;
+            color: rgba(250, 248, 243, 0.55);
+            line-height: 1.8;
+            font-family: 'Segoe UI', sans-serif;
+            position: relative;
+            z-index: 1;
+        }
+
+        .feature-verse {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(201, 168, 76, 0.1);
+            font-size: 13px;
+            color: rgba(201, 168, 76, 0.6);
+            font-style: italic;
+            font-family: 'Georgia', serif;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Large empowerment banner card */
+        .empowerment-banner {
+            grid-column: span 2;
+            background: linear-gradient(135deg, rgba(201, 168, 76, 0.08), rgba(183, 28, 28, 0.05), rgba(26, 35, 126, 0.05));
+            border: 1px solid rgba(201, 168, 76, 0.2);
+            text-align: center;
+            padding: 64px 48px;
+        }
+
+        .empowerment-banner::before {
+            opacity: 0.6;
+        }
+
+        .empowerment-banner .feature-icon {
+            width: 80px; height: 80px;
+            font-size: 36px;
+            margin: 0 auto 28px;
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            color: var(--navy);
+            border: none;
+        }
+
+        .empowerment-banner h3 {
+            font-size: 32px;
+            margin-bottom: 16px;
+        }
+
+        .empowerment-banner h3 span {
+            color: var(--gold);
+        }
+
+        .empowerment-banner p {
+            font-size: 17px;
+            max-width: 600px;
+            margin: 0 auto;
+            color: rgba(250, 248, 243, 0.6);
+        }
+
+        /* ========== TESTIMONIALS ========== */
+        .testimonials-section {
+            position: relative;
+            z-index: 1;
+            padding: 100px 48px;
+            background: linear-gradient(180deg, rgba(250, 248, 243, 0.02), transparent);
+            border-top: 1px solid rgba(201, 168, 76, 0.08);
+        }
+
+        .section-header {
+            text-align: center;
+            max-width: 600px;
+            margin: 0 auto 60px;
+        }
+
+        .section-header::before {
+            content: '✦';
+            display: block;
+            color: var(--gold);
+            font-size: 20px;
+            margin-bottom: 16px;
+            opacity: 0.6;
+        }
+
+        .section-header h2 {
+            font-size: 40px;
+            font-weight: 700;
+            color: var(--ivory);
+            margin-bottom: 16px;
+        }
+
+        .testimonials {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .testimonial-card {
+            background: linear-gradient(145deg, rgba(250, 248, 243, 0.04), rgba(245, 240, 230, 0.01));
+            border: 1px solid rgba(201, 168, 76, 0.1);
+            border-radius: 20px;
+            padding: 32px;
+            position: relative;
+            transition: all 0.4s ease;
+        }
+
+        .testimonial-card::before {
+            content: '"';
+            position: absolute;
+            top: 16px; right: 24px;
+            font-size: 60px;
+            color: rgba(201, 168, 76, 0.12);
+            font-family: 'Georgia', serif;
+            line-height: 1;
+        }
+
+        .testimonial-card:hover {
+            transform: translateY(-6px);
+            border-color: rgba(201, 168, 76, 0.2);
+        }
+
+        .testimonial-card > p {
+            font-size: 15px;
+            line-height: 1.7;
+            color: rgba(250, 248, 243, 0.7);
+            margin-bottom: 24px;
+            font-style: italic;
+            position: relative;
+            z-index: 1;
+        }
+
+        .testimonial-user {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .testimonial-user img {
+            width: 48px; height: 48px;
+            border-radius: 50%;
+            border: 2px solid rgba(201, 168, 76, 0.3);
+            object-fit: cover;
+        }
+
+        .testimonial-user .name {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--gold-light);
+        }
+
+        .testimonial-user .title {
+            display: block;
+            font-size: 12px;
+            color: rgba(250, 248, 243, 0.5);
+            margin-top: 2px;
+        }
+
+        /* ========== CTA ========== */
+        .cta-section {
+            position: relative;
+            z-index: 1;
+            padding: 100px 48px;
+            text-align: center;
+            background: linear-gradient(180deg, transparent, rgba(201, 168, 76, 0.03), transparent);
+        }
+
+        .cta-section h2 {
+            font-size: 40px;
+            font-weight: 700;
+            color: var(--ivory);
+            margin-bottom: 16px;
+        }
+
+        .cta-section p {
+            font-size: 17px;
+            color: rgba(250, 248, 243, 0.55);
+            margin-bottom: 36px;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            font-family: 'Segoe UI', sans-serif;
+            line-height: 1.6;
+        }
+
+        /* ========== FOOTER ========== */
+        footer {
+            position: relative;
+            z-index: 1;
+            background: linear-gradient(180deg, rgba(15, 19, 41, 0.9), var(--navy));
+            border-top: 1px solid rgba(201, 168, 76, 0.1);
+            padding: 80px 48px 40px;
+        }
+
+        footer .grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 60px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        footer .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--gold-light);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+        }
+
+        footer .logo i { font-size: 28px; color: var(--gold); }
+
+        footer p {
+            color: rgba(250, 248, 243, 0.5);
+            line-height: 1.7;
+            font-size: 14px;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        footer h5 {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--gold);
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
+
+        footer ul { list-style: none; }
+
+        footer ul li { margin-bottom: 12px; }
+
+        footer ul li a {
+            color: rgba(250, 248, 243, 0.5);
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        footer ul li a:hover {
+            color: var(--gold);
+            padding-left: 4px;
+        }
+
+        .footer-bottom {
+            max-width: 1200px;
+            margin: 64px auto 0;
+            padding-top: 24px;
+            border-top: 1px solid rgba(201, 168, 76, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            color: rgba(250, 248, 243, 0.3);
+        }
+
+        .footer-bottom a {
+            color: inherit;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .footer-bottom a:hover { color: var(--gold); }
+
+        .footer-bottom div { display: flex; gap: 24px; }
+
+        /* ========== SCROLLBAR & SELECTION ========== */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--navy); }
+        ::-webkit-scrollbar-thumb { background: rgba(201, 168, 76, 0.3); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(201, 168, 76, 0.5); }
+        ::selection { background: rgba(201, 168, 76, 0.3); color: var(--ivory); }
+
+        /* ========== RESPONSIVE ========== */
+        @media (max-width: 1024px) {
+            .features-grid { grid-template-columns: 1fr; }
+            .empowerment-banner { grid-column: span 1; }
+            .testimonials { grid-template-columns: repeat(2, 1fr); }
+            footer .grid { grid-template-columns: 1fr 1fr; }
+        }
+
+        @media (max-width: 768px) {
+            .hero { flex-direction: column; padding: 120px 24px 60px; }
+            .hero h1 { font-size: 36px; }
+            .diagonal-split { display: none; }
+            .hero-stats { position: relative; bottom: auto; left: auto; margin-top: 40px; }
+            .features-section, .testimonials-section, .cta-section { padding: 60px 24px; }
+            .features-header h2 { font-size: 32px; }
+            .feature-card { padding: 32px 24px; }
+            .empowerment-banner { padding: 48px 24px; }
+            .empowerment-banner h3 { font-size: 24px; }
+            .testimonials { grid-template-columns: 1fr; }
+            footer .grid { grid-template-columns: 1fr; gap: 40px; }
+            .landing-nav { padding: 16px 24px; }
+            .landing-nav.scrolled { padding: 12px 24px; }
+            .footer-bottom { flex-direction: column; gap: 16px; text-align: center; }
+        }
+
+        @media (max-width: 480px) {
+            .hero h1 { font-size: 28px; }
+            .hero-stats { flex-direction: column; width: 100%; }
+            .glass-stat { width: 100%; }
+            .hero-btns { flex-direction: column; }
+            .btn-primary, .btn-outline { width: 100%; }
+            .features-header h2 { font-size: 26px; }
+        }
+    </style>
 </head>
 <body>
+    <!-- Sacred Background -->
+    <div class="sacred-bg">
+        <div class="divine-glow"></div>
+        <div class="halo halo-1"></div>
+        <div class="halo halo-2"></div>
+        <div class="halo halo-3"></div>
+        <div class="cross-pattern"></div>
+        <div class="spirit-particles">
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
     <nav class="landing-nav" id="mainNav">
         <div class="logo">
             <i class="ti ti-church"></i>
             <span>Solution Ground</span>
         </div>
         <div class="nav-links">
-            <a href="/static/login.html" class="btn btn-sm" style="color: white;">Login</a>
-            <a href="/static/register.html" class="btn btn-accent btn-sm">Get Started</a>
+            <a href="/static/login.html" class="btn btn-sm btn-nav-login">Login</a>
+            <a href="/static/register.html" class="btn btn-sm btn-accent">Get Started</a>
         </div>
     </nav>
 
+    <!-- Hero Section -->
     <section class="hero">
         <div class="hero-content">
-            <span class="hero-badge">Modern Ministry Redefined</span>
-            <h1>Empowering Your <span>Ministry</span> Growth</h1>
-            <p>A comprehensive Church Management System designed to bridge faith and technology, ensuring your community thrives in a digital age.</p>
+            <span class="hero-badge">Faith Meets Technology</span>
+            <h1>Empowering Your <span>Church</span> to Thrive</h1>
+            <p>Built for pastors, leaders, and congregations who believe that ministry deserves tools as powerful as the message itself.</p>
             <div class="hero-btns">
-                <a href="/static/register.html" class="btn btn-primary" style="width: auto; padding: 16px 32px;">Start Free Trial</a>
-                <button class="btn btn-outline" style="background: transparent; border: 1px solid rgba(255,255,255,0.2); color: white; width: auto; padding: 16px 32px;">Watch Demo</button>
+                <a href="/static/register.html" class="btn btn-primary">Start Free Trial</a>
+                <button class="btn btn-outline" onclick="alert('Demo video coming soon!')">Watch Demo</button>
             </div>
         </div>
 
@@ -38,56 +891,86 @@
         <div class="hero-stats">
             <div class="glass-stat">
                 <span class="value">500+</span>
-                <span class="label">Active Members</span>
+                <span class="label">Congregations</span>
             </div>
             <div class="glass-stat">
                 <span class="value">15+</span>
-                <span class="label">Ministry Leaders</span>
+                <span class="label">Countries</span>
             </div>
         </div>
     </section>
 
-    <section class="section-padding" id="features">
-        <div class="section-header">
-            <h2>Tools for the Modern Sanctuary</h2>
-            <p>Every feature is built with ministry efficiency and community engagement in mind.</p>
+    <!-- ============================================ -->
+    <!-- FEATURES SECTION — CHURCH & EMPOWERMENT ONLY -->
+    <!-- ============================================ -->
+    <section class="features-section" id="features">
+        <div class="features-header">
+            <h2>Built for the <em>Church</em>,<br>Designed to <em>Empower</em></h2>
+            <p>Everything your ministry needs to shepherd, grow, and strengthen your congregation — all in one sacred space.</p>
         </div>
 
-        <div class="bento-grid">
-            <div class="bento-item bento-1">
-                <div class="icon-box"><i class="ti ti-users"></i></div>
-                <h3>Role-Based Management</h3>
-                <p>Pastors, youth leaders, and administrators each get personalized dashboards with tools tailored to their specific ministry needs and responsibilities.</p>
+        <div class="features-grid">
+            <!-- Main Empowerment Banner -->
+            <div class="feature-card empowerment-banner">
+                <div class="feature-icon">⛪</div>
+                <h3>Your Church, <span>Unified</span></h3>
+                <p>One platform that brings your entire congregation together. From the pulpit to the pew, every member stays connected, informed, and engaged in the life of the church.</p>
+                <div class="feature-verse">"So in Christ we, though many, form one body." — Romans 12:5</div>
             </div>
 
-            <div class="bento-item bento-2">
-                <div class="icon-box"><i class="ti ti-user-heart"></i></div>
-                <h3>Member Tracking</h3>
-                <p>Detailed member directories with roles, categories, and engagement insights to help you shepherd your congregation effectively.</p>
+            <!-- Congregation Management -->
+            <div class="feature-card">
+                <div class="feature-icon">🙏</div>
+                <h3>Shepherd Your Flock</h3>
+                <p>Know every member by name. Track attendance, pastoral visits, prayer requests, and spiritual milestones. Never let a sheep wander unnoticed.</p>
+                <div class="feature-verse">"I know my sheep and my sheep know me." — John 10:14</div>
             </div>
 
-            <div class="bento-item bento-3">
-                <div class="icon-box"><i class="ti ti-chart-bar"></i></div>
-                <h3>Growth Analytics</h3>
-                <p>Visual trends and reports for membership growth, contributions, and ministry impact over time.</p>
+            <!-- Ministry Empowerment -->
+            <div class="feature-card">
+                <div class="feature-icon">✨</div>
+                <h3>Empower Every Leader</h3>
+                <p>Pastors, elders, deacons, and ministry heads each get purpose-built tools. Delegate with confidence and watch every department flourish.</p>
+                <div class="feature-verse">"Equip his people for works of service." — Ephesians 4:12</div>
             </div>
 
-            <div class="bento-item bento-4">
-                <div class="icon-box"><i class="ti ti-heart"></i></div>
-                <h3>Youth Ministry</h3>
-                <p>Tailored modules for youth leaders to create drives, track engagement, and build the next generation of faithful servants.</p>
+            <!-- Spiritual Growth -->
+            <div class="feature-card">
+                <div class="feature-icon">📖</div>
+                <h3>Nurture Spiritual Growth</h3>
+                <p>Follow each believer's journey from new convert to mature disciple. Bible study tracking, baptism records, and discipleship pathways.</p>
+                <div class="feature-verse">"Grow in the grace and knowledge of our Lord." — 2 Peter 3:18</div>
+            </div>
+
+            <!-- Youth & Next Generation -->
+            <div class="feature-card">
+                <div class="feature-icon">🕊️</div>
+                <h3>Invest in the Next Generation</h3>
+                <p>Powerful youth ministry tools to disciple young hearts. Event planning, mentorship pairing, and generational bridge-building.</p>
+                <div class="feature-verse">"Train up a child in the way he should go." — Proverbs 22:6</div>
             </div>
         </div>
     </section>
 
-    <section class="section-padding bg-white">
+    <!-- Scripture Divider -->
+    <section style="position: relative; z-index: 1; padding: 60px 48px; text-align: center;">
+        <p style="font-size: 22px; font-style: italic; color: var(--gold-light); max-width: 700px; margin: 0 auto; line-height: 1.6; opacity: 0.85;">
+            "And let us consider how we may spur one another on toward love and good deeds, not giving up meeting together."
+        </p>
+        <p style="font-size: 13px; color: rgba(201, 168, 76, 0.5); margin-top: 16px; letter-spacing: 2px; text-transform: uppercase;">
+            — Hebrews 10:24-25
+        </p>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="testimonials-section">
         <div class="section-header">
-            <h2>Loved by Growing Ministries</h2>
+            <h2>Loved by Growing Churches</h2>
         </div>
 
         <div class="testimonials">
             <div class="testimonial-card">
-                <p>"Managing our 1,200 members used to be a challenge. Solution Ground made it a breeze with role-based dashboards."</p>
+                <p>"Managing our 1,200 members used to be overwhelming. Solution Ground gave us the tools to truly shepherd every soul."</p>
                 <div class="testimonial-user">
                     <img src="https://i.pravatar.cc/100?u=pastor1" alt="Pastor">
                     <div>
@@ -97,7 +980,7 @@
                 </div>
             </div>
             <div class="testimonial-card">
-                <p>"The youth ministry module has transformed how we engage our young people. They feel more connected than ever."</p>
+                <p>"Our youth ministry has never been more alive. The next generation is engaged, connected, and growing in faith."</p>
                 <div class="testimonial-user">
                     <img src="https://i.pravatar.cc/100?u=pastor2" alt="Pastor">
                     <div>
@@ -107,17 +990,17 @@
                 </div>
             </div>
             <div class="testimonial-card">
-                <p>"Having all our church activities, contributions, and member data in one place has been a game-changer for our administration."</p>
+                <p>"For the first time, our elders can see the full picture of our congregation's spiritual health. It's transformative."</p>
                 <div class="testimonial-user">
                     <img src="https://i.pravatar.cc/100?u=pastor3" alt="Pastor">
                     <div>
                         <span class="name">John K.</span>
-                        <span class="title">Administration Lead</span>
+                        <span class="title">Elder & Admin Lead</span>
                     </div>
                 </div>
             </div>
             <div class="testimonial-card">
-                <p>"Professional, spiritual, and powerful. It's exactly what our ministry needed for the digital decade."</p>
+                <p>"This isn't just software — it's a ministry partner. Our church has grown stronger and more united."</p>
                 <div class="testimonial-user">
                     <img src="https://i.pravatar.cc/100?u=pastor4" alt="Pastor">
                     <div>
@@ -129,21 +1012,29 @@
         </div>
     </section>
 
+    <!-- CTA -->
+    <section class="cta-section">
+        <h2>Ready to Empower Your Church?</h2>
+        <p>Join hundreds of congregations already using Solution Ground to strengthen their ministry and deepen their community.</p>
+        <a href="/static/register.html" class="btn btn-primary" style="padding: 18px 48px; font-size: 16px;">Begin Your Journey</a>
+    </section>
+
+    <!-- Footer -->
     <footer>
         <div class="grid">
             <div>
-                <div class="logo" style="color: white; margin-bottom: 24px;">
+                <div class="logo">
                     <i class="ti ti-church"></i>
                     <span>Solution Ground</span>
                 </div>
-                <p style="opacity: 0.5; line-height: 1.6;">Empowering ministries with intelligent management tools that prioritize community and spiritual growth.</p>
+                <p>Empowering churches with tools that honor the sacred work of ministry and community building.</p>
             </div>
             <div>
                 <h5>Platform</h5>
                 <ul>
-                    <li><a href="#">Features</a></li>
+                    <li><a href="#features">Features</a></li>
                     <li><a href="#">Security</a></li>
-                    <li><a href="#">Dashboard</a></li>
+                    <li><a href="/static/login.html">Dashboard</a></li>
                 </ul>
             </div>
             <div>
@@ -155,77 +1046,58 @@
                 </ul>
             </div>
         </div>
-        <div style="margin-top: 64px; opacity: 0.3; font-size: 12px; display: flex; justify-content: space-between;">
+        <div class="footer-bottom">
             <span>© 2026 Solution Ground Ministry. All rights reserved.</span>
-            <div style="display: flex; gap: 24px;">
-                <a href="#" style="color: inherit; text-decoration: none;">Privacy Policy</a>
-                <a href="#" style="color: inherit; text-decoration: none;">Terms of Service</a>
+            <div>
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
             </div>
         </div>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
-    <script src="https://unpkg.com/lenis@1.1.18/dist/lenis.min.js"></script>
     <script>
-        // Smooth Scroll
-        const lenis = new Lenis();
-        function raf(time) {
-            lenis.raf(time);
-            requestAnimationFrame(raf);
-        }
-        requestAnimationFrame(raf);
-
-        // Navbar Scroll
+        // Navbar scroll
         window.addEventListener('scroll', () => {
             const nav = document.getElementById('mainNav');
-            if (window.scrollY > 80) {
-                nav.classList.add('scrolled');
-            } else {
-                nav.classList.remove('scrolled');
-            }
+            nav.classList.toggle('scrolled', window.scrollY > 80);
         });
 
-        // GSAP Animations
+        // GSAP animations
         gsap.registerPlugin(ScrollTrigger);
 
         gsap.from(".hero-content > *", {
-            y: 40,
-            opacity: 0,
-            duration: 1,
-            stagger: 0.2,
-            ease: "power4.out"
+            y: 40, opacity: 0, duration: 1, stagger: 0.2, ease: "power4.out"
         });
 
         gsap.from(".diagonal-split", {
-            x: 100,
-            opacity: 0,
-            duration: 1.5,
-            ease: "power2.out"
+            x: 100, opacity: 0, duration: 1.5, ease: "power2.out"
         });
 
-        gsap.from(".bento-item", {
-            scrollTrigger: {
-                trigger: ".bento-grid",
-                start: "top 80%"
-            },
-            y: 60,
-            opacity: 0,
-            duration: 0.8,
-            stagger: 0.1,
-            ease: "power2.out"
+        gsap.from(".glass-stat", {
+            y: 30, opacity: 0, duration: 0.8, stagger: 0.15, delay: 0.6, ease: "power2.out"
+        });
+
+        gsap.from(".features-header", {
+            scrollTrigger: { trigger: ".features-section", start: "top 80%" },
+            y: 50, opacity: 0, duration: 0.8, ease: "power2.out"
+        });
+
+        gsap.from(".feature-card", {
+            scrollTrigger: { trigger: ".features-grid", start: "top 80%" },
+            y: 60, opacity: 0, duration: 0.8, stagger: 0.15, ease: "power2.out"
         });
 
         gsap.from(".testimonial-card", {
-            scrollTrigger: {
-                trigger: ".testimonials",
-                start: "top 85%"
-            },
-            y: 40,
-            opacity: 0,
-            duration: 0.6,
-            stagger: 0.1,
-            ease: "power2.out"
+            scrollTrigger: { trigger: ".testimonials", start: "top 85%" },
+            y: 40, opacity: 0, duration: 0.6, stagger: 0.1, ease: "power2.out"
+        });
+
+        // Parallax
+        gsap.to(".diagonal-split img", {
+            scrollTrigger: { trigger: ".hero", start: "top top", end: "bottom top", scrub: 1 },
+            y: 100, ease: "none"
         });
     </script>
 </body>
