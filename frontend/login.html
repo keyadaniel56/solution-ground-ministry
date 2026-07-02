@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Solution Ground Ministry</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body class="login-page">
+    <div class="login-container">
+        <div class="logo">
+            <h1><i class="ti ti-church" style="color: var(--accent);"></i> SGM</h1>
+            <p>Welcome back! Please enter your details.</p>
+        </div>
+        <div id="alert" class="alert"></div>
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" placeholder="name@example.com" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" placeholder="••••••••" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Sign in</button>
+        </form>
+        <div class="auth-link">
+            Don't have an account? <a href="/static/register.html">Create one for free</a>
+        </div>
+        <div style="margin-top: 24px; text-align: center;">
+            <a href="/static/index.html" style="color: var(--text-light); text-decoration: none; font-size: 13px; font-weight: 600;">← Back to Home</a>
+        </div>
+    </div>
+
+    <script src="/static/js/api.js"></script>
+    <script>
+        // Redirect if already logged in
+        if (getUser()) {
+            window.location.href = getDashboardURL(getUser().role);
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const alert = document.getElementById('alert');
+            const btn = e.target.querySelector('button');
+            
+            alert.className = 'alert';
+            alert.textContent = '';
+            btn.disabled = true;
+            btn.textContent = 'Signing in...';
+
+            try {
+                const response = await login(
+                    document.getElementById('email').value,
+                    document.getElementById('password').value
+                );
+                window.location.href = getDashboardURL(response.user.role);
+            } catch (error) {
+                alert.className = 'alert alert-error';
+                alert.textContent = error.message;
+                btn.disabled = false;
+                btn.textContent = 'Sign in';
+            }
+        });
+    </script>
+</body>
+</html>
