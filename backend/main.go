@@ -7,6 +7,7 @@ import (
 	"sgm/api/models"
 
 	"github.com/gin-gonic/gin"
+	"github.com/gin-contrib/cors"
 )
 
 func main() {
@@ -15,6 +16,15 @@ func main() {
 
 	// Create Gin router
 	r := gin.Default()
+
+	// CORS middleware - allow frontend dev server
+	r.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"http://localhost:2350", "http://127.0.0.1:2350"},
+		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+	}))
 
 	// Serve static files from frontend directory
 	r.Static("/static", "../frontend")
